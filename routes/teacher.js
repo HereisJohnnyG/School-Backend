@@ -2,7 +2,7 @@ const express = require('express');
 const app = express.Router();
 
 id = 0;
-var user = [{"id": ++id, "name": "Marcos", "lastname":"Gomes", "phd": true},
+var teacher = [{"id": ++id, "name": "Marcos", "lastname":"Gomes", "phd": true},
             {"id": ++id, "name": "Antonio", "lastname":"Nunes", "phd": false},
             {"id": ++id, "name": "John", "lastname":"Doe", "phd": true}
 ]
@@ -23,22 +23,24 @@ app.delete('/', function (req, res) {
   res.send("Todos os Professor foram removidos com sucesso");
 })
 
-app.get('/:name', function (req, res) {
-  let name = req.params.name;
-  let filteredstudent = teacher.filter ( (s) => {return (s.nome == name)} );
+app.get('/:id', function (req, res) {
+  let idprov = req.params.id;
+  let filteredstudent = teacher.filter ( (s) => {return (s.id == idprov)} );
   if(filteredstudent.length >= 1){
     res.send(filteredstudent[0]);
   }else{
     res.status(404);
     res.send("Professor não encontrado");
   }
-  res.send(name);
 })
 
+function search_ID(ide) {
+    let filteredstudent = teacher.filter ( (s) => {return (s.id == ide)} );
+    return(filteredstudent);
+}
 
 app.post('/', function (req, res) {
   res.sendStatus(429);
 })
 
-
-module.exports = app;
+module.exports = {app, search_ID};

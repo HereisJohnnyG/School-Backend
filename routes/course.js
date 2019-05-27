@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express.Router();
+const app2 = require('./teacher.js');
 
 var id = 0;
-var course = [{"id": ++id, "name": "Engenharia", "period": "5", "teacher": "José", "city": "Timoteo"},
-{"id": ++id, "name": "Agronomia", "period": "1", "teacher": "João", "city": "Ipatinga"},
-{"id": ++id, "name": "Farmacia", "period": "7", "teacher": "Julio", "city": "Coronel Fabriciano"},
+var course = [{"id": ++id, "name": "Engenharia", "period": "5", "teacher": 2, "city": "Timoteo"},
+{"id": ++id, "name": "Agronomia", "period": "1", "teacher": 3, "city": "Ipatinga"},
+{"id": ++id, "name": "Farmacia", "period": "7", "teacher": 1, "city": "Coronel Fabriciano"},
 ]
 
 
@@ -15,8 +16,11 @@ app.get('/', function (req, res) {
 
 app.post('/', function (req, res) {
   let curso = req.body;
-  course.push(curso);
   course['id'] = ++id;
+  
+  course['teacher'] = app2.search_ID(1);
+  console.log(course);
+  course.push(curso);
   res.send("Curso cadastrado com sucesso");
 })
 
@@ -34,9 +38,7 @@ app.get('/:name', function (req, res) {
     res.status(404);
     res.send("Curso não encontrado");
   }
-  res.send(name);
 })
-
 
 app.post('/', function (req, res) {
   res.sendStatus(429);
