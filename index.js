@@ -1,6 +1,7 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const app = express()
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const baseAPI = "/api/v1";
  
 app.use(bodyParser.json())
 
