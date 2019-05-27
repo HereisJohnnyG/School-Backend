@@ -33,7 +33,10 @@ app.get('/students/:name', function (req, res) {
   let filteredstudent = students.filter ( (s) => {return (s.nome == name)} );
   if(filteredstudent.length >= 1){
     res.send(filteredstudent[0]);
-  }else res.status(404).send("Estudante não encontrado");
+  }else{
+    res.status(404);
+    res.send("Estudante não encontrado");
+  }
   res.send(name);
 })
 
@@ -42,4 +45,4 @@ app.post('/', function (req, res) {
   res.sendStatus(429);
 })
  
-app.lisen(process.env.PORT);
+app.listen(process.env.PORT);
