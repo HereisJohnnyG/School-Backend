@@ -10,7 +10,7 @@ var students = [{"nome": "Marcos", "idade": "23"},
 ]
 
 app.get('/', function (req, res) {
-  res.send('Hello World - Jefferson Gandra')
+  res.send('Hello World - Jefferson MG')
 })
 
 app.get('/students', function (req, res) {
