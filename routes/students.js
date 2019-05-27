@@ -25,20 +25,26 @@ app.delete('/', function (req, res) {
 
 app.delete('/:name', function (req, res) {
   let name = req.params.name;
-  let filteredstudent = students.delete( name );
-  res.send("Todos os estudante foram removidos com sucesso");
+  let filteredstudent = students.filter ( (s) => {return (s.name != name)} );
+  if(students.length >= 1 && students.length != filteredstudent.length){
+    students = filteredstudent;
+    res.send(students);
+  }else{
+    students = filteredstudent;
+    res.status(404);
+    res.send("Estudante não encontrado");
+  }
 })
 
 app.get('/:name', function (req, res) {
   let name = req.params.name;
-  let filteredstudent = students.filter ( (s) => {return (s.nome == name)} );
+  let filteredstudent = students.filter ( (s) => {return (s.name == name)} );
   if(filteredstudent.length >= 1){
     res.send(filteredstudent[0]);
   }else{
     res.status(404);
     res.send("Estudante não encontrado");
   }
-  res.send(name);
 })
 
 
