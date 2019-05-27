@@ -17,7 +17,9 @@ app.post('/', function (req, res) {
 });
 
 app.use(`${baseAPI}/students`, require('./routes/students'));
-//app.use(`${baseAPI}/users`, require('./routes/users'));
+app.use(`${baseAPI}/course`, require('./routes/course'));
+app.use(`${baseAPI}/teacher`, require('./routes/teacher'));
+app.use(`${baseAPI}/users`, require('./routes/users'));
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log(`Server running on PORT ${listener.address().port}`);

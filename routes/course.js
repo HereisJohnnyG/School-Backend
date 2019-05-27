@@ -14,8 +14,9 @@ app.get('/', function (req, res) {
 })
 
 app.post('/', function (req, res) {
-  var student = req.body;
-  course.push(student);
+  let curso = req.body;
+  course.push(curso);
+  course['id'] = ++id;
   res.send("Curso cadastrado com sucesso");
 })
 
