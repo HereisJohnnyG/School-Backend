@@ -31,16 +31,25 @@ app.post('/', function (req, res) {
   var professor = req.body;
   teacher['id'] = ++id;
   teacher.push(professor);
-  res.send("Professor cadastrado com sucesso");
+  res.status(201).send("Professor cadastrado com sucesso");
 })
 
 //------------------------PUT------------------------------
 
-
-
-
-
-
+app.put('/', function (req, res) {
+  let prof = req.body;
+  console.log(prof.length);
+  for(let i = 0; i < teacher.length; i ++){
+    console.log(teacher[i].id);
+    if(teacher[i].id == prof.id){
+      teacher[i].name = prof.name || teacher[i].name;
+      teacher[i].lastname = prof.lastname || teacher[i].lastname;
+      teacher[i].phd = prof.phd || teacher[i].phd;
+      
+    }  
+  }
+  res.send("Professor modificado com sucesso");
+})
 
 
 //------------------------DELETE------------------------------

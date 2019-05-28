@@ -27,10 +27,13 @@ app.get('/:id', function (req, res) {
 //-------------------------------POST--------------------------------
 
 app.post('/', function (req, res) {
-  var usuario = req.body;
-  usuario['id'] = ++id;
-  user.push(usuario);
-  res.send("Usuário cadastrado com sucesso");
+  let usuario = req.body;
+  //if(usuario.length > 0){
+    console.log(usuario);
+    usuario['id'] = ++id;
+    user.push(usuario);
+    res.status(201).send("Usuário cadastrado com sucesso");
+  //}else res.status(404).send("Não foi possível cadastrar o usuário")
 })
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
@@ -50,6 +53,25 @@ app.delete('/:id', function (req, res) {
     res.send("Usuário não encontrado");
   }
 })
+
+//--------------------PUT-------------------------------
+
+app.put('/', function (req, res) {
+  let usuario = req.body;
+  //console.log(usuario.id);
+  console.log(user.length);
+  for(let i = 0; i < user.length; i ++){
+    console.log(user[i].id);
+    if(user[i].id == usuario.id){
+      user[i].name = usuario.name || user[i].name;
+      user[i].lastname = usuario.lastname || user[i].lastname;
+      user[i].profile = usuario.profile || user[i].profile;
+      
+    }  
+  }
+  res.send("Usuário modificado com sucesso");
+})
+
 
 
 

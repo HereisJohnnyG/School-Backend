@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express.Router();
-const curso = require('./course.js');
+const _curso = require('./course.js');
 
 var id = 0;
 
@@ -34,17 +34,44 @@ app.post('/', function (req, res) {
 
   if(student.course){
     console.log(student.course.length);
-    let filteredcourses = student.course.filter(element => { return curso.search_ID(element)!= ""});
+    let filteredcourses = student.course.filter(element => { return _curso.search_ID(element)!= ""});
     student.course = filteredcourses;
     console.log(student.course);
   for(let i = 0; i < student.course.length; i++){
-    student.course[i] = curso.search_ID(student.course[i]);
+    student.course[i] = _curso.search_ID(student.course[i]);
   }
 }
 
 
   students.push(student);
-  res.send("Estudante cadastrado com sucesso");
+  res.status(201).send("Estudante cadastrado com sucesso");
+})
+
+//-------------------------------PUT--------------------------------
+
+app.put('/', function (req, res) {
+  let error = true;
+  let estudante = req.body;
+  //console.log(usuario.id);
+  console.log(students.length);
+  for(let i = 0; i < students.length; i ++){
+    if(students[i].id == estudante.id){
+      console.log(students[i].id);
+      if(estudante.course){
+        for(let i = 0; i < estudante.course.length; i++){
+          estudante.course[i] = _curso.search_ID(estudante.course[i]);
+        }
+      }
+      students[i].name = estudante.name || students[i].name;
+      students[i].lastname = estudante.lastname || students[i].lastname;
+      students[i].age = estudante.age || students[i].age;
+      students[i].course = estudante.course || students[i].course;
+      error = false;
+    }  
+  }
+  if(!error){
+    res.send("Usuário modificado com sucesso");
+  }else res.status(404).send("Não foi possivel modificar o estudante");
 })
 
 

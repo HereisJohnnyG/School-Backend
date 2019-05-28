@@ -42,8 +42,35 @@ app.post('/', function (req, res) {
     }
   }
   course.push(curso);
-  res.send("Curso cadastrado com sucesso");
+  res.status(201).send("Curso cadastrado com sucesso");
 })
+
+//------------------------PUT------------------------------
+
+app.put('/', function (req, res) {
+  let curso = req.body;
+   for(let i = 0; i < course.length; i ++){
+     if(course[i].id == curso.id){
+       console.log(course[i]);
+       if(curso.teacher){
+         for(let i = 0; i < curso.teacher.length; i++){
+           curso.teacher[i] = app2.search_ID(curso.teacher[i]);
+         }
+       }
+       course[i].name = curso.name || course[i].name;
+       course[i].period = curso.period || course[i].period;
+       course[i].city = curso.phd || course[i].city;
+       course[i].teacher = curso.teacher || course[i].teacher;
+       
+     }  
+   }
+   res.send("Curso modificado com sucesso");
+  
+})
+
+
+
+
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
   course = [];
