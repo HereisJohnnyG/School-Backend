@@ -34,7 +34,7 @@ app.post('/', function (req, res) {
       curso.teacher = filteredteachers;
       console.log(curso.teacher);
     for(let i = 0; i < curso.teacher.length; i++){
-        curso.teacher[i] = app2.search_ID(curso.teacher[i]);
+        curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
     }
   }
   course.push(curso);
