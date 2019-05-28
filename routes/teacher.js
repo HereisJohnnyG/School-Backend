@@ -36,20 +36,23 @@ app.post('/', function (req, res) {
 
 //------------------------PUT------------------------------
 
-app.put('/', function (req, res) {
+app.put('/:id', function (req, res) {
+
+
   let prof = req.body;
-  console.log(prof.length);
-  for(let i = 0; i < teacher.length; i ++){
-    console.log(teacher[i].id);
-    if(teacher[i].id == prof.id){
-      teacher[i].name = prof.name || teacher[i].name;
-      teacher[i].lastname = prof.lastname || teacher[i].lastname;
-      teacher[i].phd = prof.phd || teacher[i].phd;
-      
-    }  
-  }
-  res.send("Professor modificado com sucesso");
-})
+  //console.log(usuario.id);
+  let id = parseInt(req.params.id);
+  let filteredprof = teacher.filter ( (s) => {return (s.id == id)} );
+  let index = teacher.indexOf(filteredprof[0]);
+  //console.log(index, filteredstudent[0], usuarios);
+  if(index >= 0){
+    teacher[index].name = prof.name || teacher[index].name;
+    teacher[index].lastname = prof.lastname || teacher[index].lastname;
+    teacher[index].phd = prof.phd || teacher[index].phd; 
+      res.send("Professor modificado com sucesso");
+  }else res.status(404).send("Professor não encontrado");
+});
+
 
 
 //------------------------DELETE------------------------------

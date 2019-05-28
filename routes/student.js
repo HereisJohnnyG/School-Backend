@@ -46,32 +46,31 @@ app.post('/', function (req, res) {
 
 //-------------------------------PUT--------------------------------
 
-app.put('/', function (req, res) {
-  let error = true;
-  let estudante = req.body;
-  //console.log(usuario.id);
-  console.log(students.length);
-  for(let i = 0; i < students.length; i ++){
-    if(students[i].id == estudante.id){
-      console.log(students[i].id);
-      if(estudante.course){
-        for(let i = 0; i < estudante.course.length; i++){
-          estudante.course[i] = _curso.search_ID(estudante.course[i]);
-        }
+app.put('/:id', function (req, res) {
+
+
+  let id = parseInt(req.params.id);
+  let estudantes = req.body;
+  let filteredstudent = students.filter ( (s) => {return (s.id == id)} );
+  let index = students.indexOf(filteredstudent[0]);
+  console.log(index, filteredstudent[0], estudantes);
+  if(index >= 0){
+    if(estudantes.course){
+      for(let i = 0; i < estudantes.course.length; i++){
+        estudantes.course[i] = _curso.search_ID(estudantes.course[i]);
       }
-      students[i].name = estudante.name || students[i].name;
-      students[i].lastname = estudante.lastname || students[i].lastname;
-      students[i].age = estudante.age || students[i].age;
-      students[i].course = estudante.course || students[i].course;
-      error = false;
-    }  
+    }
+    students[index].name = estudantes.name || students[index].name;
+    students[index].lastname = estudantes.lastname || students[index].lastname;
+    students[index].age = estudantes.age || students[index].age;
+    students[index].course = estudantes.course || students[index].course;
+    error = false;
+    res.send("Estudante cadastrado com sucesso");
+  }else{
+    res.status(404);
+    res.send("Estudante não encontrado");
   }
-  if(!error){
-    res.send("Usuário modificado com sucesso");
-  }else res.status(404).send("Não foi possivel modificar o estudante");
-})
-
-
+});
 //-------------------------------DELETE--------------------------------
 
 

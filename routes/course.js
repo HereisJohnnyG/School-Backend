@@ -43,25 +43,25 @@ app.post('/', function (req, res) {
 
 //------------------------PUT------------------------------
 
-app.put('/', function (req, res) {
+app.put('/:id', function (req, res) {
+  let id = parseInt(req.params.id);
   let curso = req.body;
-   for(let i = 0; i < course.length; i ++){
-     if(course[i].id == curso.id){
-       console.log(course[i]);
-       if(curso.teacher){
-         for(let i = 0; i < curso.teacher.length; i++){
-           curso.teacher[i] = app2.search_ID(curso.teacher[i]);
-         }
-       }
-       course[i].name = curso.name || course[i].name;
-       course[i].period = curso.period || course[i].period;
-       course[i].city = curso.phd || course[i].city;
-       course[i].teacher = curso.teacher || course[i].teacher;
-       
-     }  
-   }
-   res.send("Curso modificado com sucesso");
-  
+  let filteredcourses = course.filter ( (s) => {return (s.id == id)} );
+  let index = course.indexOf(filteredcourses[0]);
+  console.log(index, filteredcourses[0], curso);
+  if(index >= 0){
+    if(curso.teacher){
+      for(let i = 0; i < curso.teacher.length; i++){
+        console.log(app2.search_ID(curso.teacher[i]));
+        curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
+      }
+    }
+    course[index].name = curso.name || course[index].name;
+    course[index].period = curso.period || course[index].period;
+    course[index].city = curso.phd || course[index].city;
+    course[index].teacher = curso.teacher || course[index].teacher;
+    res.send("Curso modificado com sucesso");
+  }else res.status(404).send("Curso modificado com sucesso");  
 })
 
 

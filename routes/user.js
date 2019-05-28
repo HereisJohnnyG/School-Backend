@@ -57,21 +57,24 @@ app.delete('/:id', function (req, res) {
 
 //--------------------PUT-------------------------------
 
-app.put('/', function (req, res) {
-  let usuario = req.body;
+app.put('/:id', function (req, res) {
+  let usuarios = req.body;
   //console.log(usuario.id);
   console.log(user.length);
-  for(let i = 0; i < user.length; i ++){
-    console.log(user[i].id);
-    if(user[i].id == usuario.id){
-      user[i].name = usuario.name || user[i].name;
-      user[i].lastname = usuario.lastname || user[i].lastname;
-      user[i].profile = usuario.profile || user[i].profile;
-      
-    }  
-  }
-  res.send("Usuário modificado com sucesso");
-})
+  let id = parseInt(req.params.id);
+  let filteredstudent = user.filter ( (s) => {return (s.id == id)} );
+  let index = user.indexOf(filteredstudent[0]);
+  //console.log(index, filteredstudent[0], usuarios);
+  if(index >= 0){
+      user[index].name = usuarios.name || user[index].name;
+      user[index].lastname = usuarios.lastname || user[index].lastname;
+      user[index].profile = usuarios.profile || user[index].profile;  
+      res.send("Usuário modificado com sucesso");
+  }else res.status(404).send("Usuário não encontrado");
+});
+
+
+
 
 
 
