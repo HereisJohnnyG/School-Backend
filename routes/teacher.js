@@ -29,7 +29,7 @@ app.get('/:id', function (req, res) {
 
 app.post('/', function (req, res) {
   var professor = req.body;
-  teacher['id'] = ++id;
+  professor['id'] = ++id;
   teacher.push(professor);
   res.status(201).send("Professor cadastrado com sucesso");
 })
