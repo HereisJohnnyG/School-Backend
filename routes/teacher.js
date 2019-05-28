@@ -33,6 +33,16 @@ app.post('/', function (req, res) {
   teacher.push(professor);
   res.send("Professor cadastrado com sucesso");
 })
+
+//------------------------PUT------------------------------
+
+
+
+
+
+
+
+
 //------------------------DELETE------------------------------
 app.delete('/', function (req, res) {
   teacher = [];

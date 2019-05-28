@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express.Router();
+const curso = require('./course.js');
 
 var id = 0;
 
@@ -12,9 +13,9 @@ app.get('/', function (req, res) {
   res.send(students);
 })
 
-app.get('/:name', function (req, res) {
-  let name = req.params.name;
-  let filteredstudent = students.filter ( (s) => {return (s.name == name)} );
+app.get('/:id', function (req, res) {
+  let id = req.params.id;
+  let filteredstudent = students.filter ( (s) => {return (s.id == id)} );
   if(filteredstudent.length >= 1){
     res.send(filteredstudent[0]);
   }else{
@@ -29,6 +30,19 @@ app.get('/:name', function (req, res) {
 app.post('/', function (req, res) {
   var student = req.body;
   student['id'] = ++id;
+
+
+  if(student.course){
+    console.log(student.course.length);
+    let filteredcourses = student.course.filter(element => { return curso.search_ID(element)!= ""});
+    student.course = filteredcourses;
+    console.log(student.course);
+  for(let i = 0; i < student.course.length; i++){
+    student.course[i] = curso.search_ID(student.course[i]);
+  }
+}
+
+
   students.push(student);
   res.send("Estudante cadastrado com sucesso");
 })

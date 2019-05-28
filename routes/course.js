@@ -63,7 +63,13 @@ app.delete('/:id', function (req, res) {
   }
 })
 
+//------------------------Functions------------------------------
+
+function search_ID(ide) {
+  let result = course.filter ( (s) => {return (s.id == ide)} );
+  return(result);
+}
 
 //------------------------EXPORT------------------------------
 
-module.exports = app;
+module.exports = {app, search_ID};
