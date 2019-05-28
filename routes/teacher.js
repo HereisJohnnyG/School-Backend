@@ -7,21 +7,12 @@ var teacher = [{"id": ++id, "name": "Marcos", "lastname":"Gomes", "phd": true},
             {"id": ++id, "name": "John", "lastname":"Doe", "phd": true}
 ]
 
+//-------------------------------GET--------------------------------
+
 app.get('/', function (req, res) {
   res.send(teacher);
 })
 
-app.post('/', function (req, res) {
-  var professor = req.body;
-  teacher['id'] = ++id;
-  teacher.push(professor);
-  res.send("Professor cadastrado com sucesso");
-})
-
-app.delete('/', function (req, res) {
-  teacher = [];
-  res.send("Todos os Professor foram removidos com sucesso");
-})
 
 app.get('/:id', function (req, res) {
   let idprov = req.params.id;
@@ -34,13 +25,44 @@ app.get('/:id', function (req, res) {
   }
 })
 
+//------------------------POST------------------------------
+app.post('/', function (req, res) {
+  res.sendStatus(429);
+})
+
+app.post('/', function (req, res) {
+  var professor = req.body;
+  teacher['id'] = ++id;
+  teacher.push(professor);
+  res.send("Professor cadastrado com sucesso");
+})
+//------------------------DELETE------------------------------
+app.delete('/', function (req, res) {
+  teacher = [];
+  res.send("Todos os Professor foram removidos com sucesso");
+})
+
+app.delete('/:id', function (req, res) {
+  let id = req.params.id;
+  let filteredteachers = teacher.filter ( (s) => {return (s.id != id)} );
+  if(teacher.length >= 1 && teacher.length != filteredteachers.length){
+    teacher = filteredteachers;
+    res.send(teacher);
+  }else{
+    teacher = filteredteachers;
+    res.status(404);
+    res.send("Usuário não encontrado");
+  }
+})
+
+
+//------------------------Functions------------------------------
+
 function search_ID(ide) {
     let result = teacher.filter ( (s) => {return (s.id == ide)} );
     return(result);
 }
 
-app.post('/', function (req, res) {
-  res.sendStatus(429);
-})
 
+//------------------------EXPORT------------------------------
 module.exports = {app, search_ID};

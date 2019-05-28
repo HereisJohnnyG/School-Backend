@@ -9,30 +9,10 @@ var course = [{"id": ++id, "name": "Engenharia", "period": "5", "teacher": 2, "c
 ]
 
 
+//-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {
   res.send(course);
-})
-
-app.post('/', function (req, res) {
-  let curso = req.body;
-  curso['id'] = ++id;
-  
-  if(curso.teacher){
-      console.log(curso.teacher.length);
-      let filteredteachers = curso.teacher.filter(element => { return app2.search_ID(element) });
-      curso.teacher = filteredteachers;
-    for(let i = 0; i < curso.teacher.length; i++){
-        curso.teacher[i] = app2.search_ID(curso.teacher[i]);
-    }
-  }
-  course.push(curso);
-  res.send("Curso cadastrado com sucesso");
-})
-
-app.delete('/', function (req, res) {
-  course = [];
-  res.send("Todos os Curso foram removidos com sucesso");
 })
 
 app.get('/:name', function (req, res) {
@@ -46,9 +26,41 @@ app.get('/:name', function (req, res) {
   }
 })
 
+//-------------------------------POST--------------------------------
+
 app.post('/', function (req, res) {
-  res.sendStatus(429);
+  let curso = req.body;
+  curso['id'] = ++id;
+  
+  if(curso.teacher){
+      console.log(curso.teacher.length);
+      let filteredteachers = curso.teacher.filter(element => { return app2.search_ID(element)!= ""});
+      curso.teacher = filteredteachers;
+      console.log(curso.teacher);
+    for(let i = 0; i < curso.teacher.length; i++){
+        curso.teacher[i] = app2.search_ID(curso.teacher[i]);
+    }
+  }
+  course.push(curso);
+  res.send("Curso cadastrado com sucesso");
+})
+//-------------------------------DELETE--------------------------------
+app.delete('/', function (req, res) {
+  course = [];
+  res.send("Todos os Curso foram removidos com sucesso");
 })
 
+app.delete('/:id', function (req, res) {
+  let id = req.params.id;
+  let filteredcourses = course.filter ( (s) => {return (s.id != id)} );
+  if(course.length >= 1 && course.length != filteredcourses.length){
+    course = filteredcourses;
+    res.send(course);
+  }else{
+    course = filteredcourses;
+    res.status(404);
+    res.send("Usuário não encontrado");
+  }
+})
 
 module.exports = app;

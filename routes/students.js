@@ -7,9 +7,27 @@ var students = [{"id": ++id, "name": "Marcos", "lastname": "Gomes", "age": "23",
 {"id": ++id, "name": "Jose", "lastname": "Gomes", "age": "23", "course": "Engenharia"},
 {"id": ++id, "name": "Gustavo", "lastname": "Gomes", "age": "23", "course": "Engenharia"},
 ]
-
+//-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
   res.send(students);
+})
+
+app.get('/:name', function (req, res) {
+  let name = req.params.name;
+  let filteredstudent = students.filter ( (s) => {return (s.name == name)} );
+  if(filteredstudent.length >= 1){
+    res.send(filteredstudent[0]);
+  }else{
+    res.status(404);
+    res.send("Estudante não encontrado");
+  }
+})
+
+
+//-------------------------------POST--------------------------------
+
+app.post('/', function (req, res) {
+  res.sendStatus(429);
 })
 
 app.post('/', function (req, res) {
@@ -18,6 +36,10 @@ app.post('/', function (req, res) {
   students.push(student);
   res.send("Estudante cadastrado com sucesso");
 })
+
+
+//-------------------------------DELETE--------------------------------
+
 
 app.delete('/', function (req, res) {
   students = [];
@@ -37,21 +59,10 @@ app.delete('/:name', function (req, res) {
   }
 })
 
-app.get('/:name', function (req, res) {
-  let name = req.params.name;
-  let filteredstudent = students.filter ( (s) => {return (s.name == name)} );
-  if(filteredstudent.length >= 1){
-    res.send(filteredstudent[0]);
-  }else{
-    res.status(404);
-    res.send("Estudante não encontrado");
-  }
-})
 
 
-app.post('/', function (req, res) {
-  res.sendStatus(429);
-})
+
+
 
 
 module.exports = app;
