@@ -8,11 +8,11 @@ const baseAPI = "/api/v1";
 
 app.use(bodyParser.json());
 
-app.get('/', function (req, res) {
+app.get(baseAPI, function (req, res) {
   res.send('Hello World!');
 });
 
-app.post('/', function (req, res) {
+app.post(baseAPI, function (req, res) {
   res.send('Hello World');
 });
 
