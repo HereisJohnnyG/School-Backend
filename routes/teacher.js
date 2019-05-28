@@ -63,11 +63,11 @@ app.delete('/:id', function (req, res) {
   let filteredteachers = teacher.filter ( (s) => {return (s.id != id)} );
   if(teacher.length >= 1 && teacher.length != filteredteachers.length){
     teacher = filteredteachers;
-    res.send("Professor deletado do sistema");
+    res.send("Professor removido do sistema");
   }else{
     teacher = filteredteachers;
     res.status(404);
-    res.send("Usuário não encontrado");
+    res.send("Professor não encontrado");
   }
 })
 

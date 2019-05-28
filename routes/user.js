@@ -47,7 +47,7 @@ app.delete('/:id', function (req, res) {
   let filteredstudent = user.filter ( (s) => {return (s.id != id)} );
   if(user.length >= 1 && user.length != filteredstudent.length){
     user = filteredstudent;
-    res.send("Usuário deletado do sistema");
+    res.send("Usuário removido do sistema");
   }else{
     user = filteredstudent;
     res.status(404);
