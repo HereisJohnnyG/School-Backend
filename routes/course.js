@@ -15,9 +15,9 @@ app.get('/', function (req, res) {
   res.send(course);
 })
 
-app.get('/:name', function (req, res) {
-  let name = req.params.name;
-  let filteredstudent = course.filter ( (s) => {return (s.nome == name)} );
+app.get('/:id', function (req, res) {
+  let id = req.params.id;
+  let filteredstudent = course.filter ( (s) => {return (s.id == id)} );
   if(filteredstudent.length >= 1){
     res.send(filteredstudent[0]);
   }else{
