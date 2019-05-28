@@ -4,7 +4,7 @@ const app2 = require('./teacher.js');
 
 var id = 0;
 
-
+course = [];
 //-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {

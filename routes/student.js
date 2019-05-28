@@ -4,7 +4,7 @@ const _curso = require('./course.js');
 
 var id = 0;
 
-
+var students = [];
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
   res.send(students);
