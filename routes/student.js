@@ -57,7 +57,7 @@ app.put('/:id', function (req, res) {
   if(index >= 0){
     if(estudantes.course){
       for(let i = 0; i < estudantes.course.length; i++){
-        estudantes.course[i] = _curso.search_ID(estudantes.course[i]);
+        estudantes.course[i] = _curso.search_ID(estudantes.course[i])[0];
       }
     }
     students[index].name = estudantes.name || students[index].name;
