@@ -13,8 +13,8 @@ app.get('/', function (req, res) {
 
 app.post('/', function (req, res) {
   var professor = req.body;
-  teacher.push(professor);
   teacher['id'] = ++id;
+  teacher.push(professor);
   res.send("Professor cadastrado com sucesso");
 })
 
@@ -35,8 +35,8 @@ app.get('/:id', function (req, res) {
 })
 
 function search_ID(ide) {
-    let filteredstudent = teacher.filter ( (s) => {return (s.id == ide)} );
-    return(filteredstudent);
+    let result = teacher.filter ( (s) => {return (s.id == ide)} );
+    return(result);
 }
 
 app.post('/', function (req, res) {

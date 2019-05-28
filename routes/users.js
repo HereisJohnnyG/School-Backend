@@ -15,9 +15,10 @@ app.get('/', function (req, res) {
 })
 
 app.post('/', function (req, res) {
-  var student = req.body;
+  var usuario = req.body;
+  usuario['id'] = ++id;
   user.push(student);
-  res.send("usuário cadastrado com sucesso");
+  res.send("Usuário cadastrado com sucesso");
 })
 
 app.delete('/', function (req, res) {
@@ -25,16 +26,28 @@ app.delete('/', function (req, res) {
   res.send("Todos os usuários foram removidos com sucesso");
 })
 
-app.get('/:name', function (req, res) {
-  let name = req.params.name;
-  let filteredstudent = user.filter ( (s) => {return (s.nome == name)} );
-  if(filteredstudent.length >= 1){
-    res.send(filteredstudent[0]);
+app.delete('/:id', function (req, res) {
+  let id = req.params.id;
+  let filteredstudent = user.filter ( (s) => {return (s.id != id)} );
+  if(user.length >= 1 && user.length != filteredstudent.length){
+    user = filteredstudent;
+    res.send(user);
+  }else{
+    user = filteredstudent;
+    res.status(404);
+    res.send("Usuário não encontrado");
+  }
+})
+
+app.get('/:id', function (req, res) {
+  let id = req.params.id;
+  let filtereduser = user.filter ( (s) => {return (s.id == id)} );
+  if(filtereduser.length >= 1){
+    res.send(filtereduser[0]);
   }else{
     res.status(404);
     res.send("Usuário não encontrado");
   }
-  res.send(name);
 })
 
 

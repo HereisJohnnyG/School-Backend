@@ -16,10 +16,16 @@ app.get('/', function (req, res) {
 
 app.post('/', function (req, res) {
   let curso = req.body;
-  course['id'] = ++id;
+  curso['id'] = ++id;
   
-  course['teacher'] = app2.search_ID(1);
-  console.log(course);
+  if(curso.teacher){
+      console.log(curso.teacher.length);
+      let filteredteachers = curso.teacher.filter(element => { return app2.search_ID(element) });
+      curso.teacher = filteredteachers;
+    for(let i = 0; i < curso.teacher.length; i++){
+        curso.teacher[i] = app2.search_ID(curso.teacher[i]);
+    }
+  }
   course.push(curso);
   res.send("Curso cadastrado com sucesso");
 })
