@@ -42,7 +42,7 @@ app.post('/', function (req, res) {
   }
 }
 
-
+  console.log(student);
   students.push(student);
   res.status(201).send("Estudante cadastrado com sucesso");
 })
@@ -83,9 +83,9 @@ app.delete('/', function (req, res) {
   res.send("Todos os estudante foram removidos com sucesso");
 })
 
-app.delete('/:name', function (req, res) {
-  let name = req.params.name;
-  let filteredstudent = students.filter ( (s) => {return (s.name != name)} );
+app.delete('/:id', function (req, res) {
+  let id = req.params.id;
+  let filteredstudent = students.filter ( (s) => {return (s.id != id)} );
   if(students.length >= 1 && students.length != filteredstudent.length){
     students = filteredstudent;
     res.send(students);
