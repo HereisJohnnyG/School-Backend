@@ -34,7 +34,7 @@ app.post('/', function (req, res) {
       curso.teacher = filteredteachers;
       console.log(curso.teacher);
     for(let i = 0; i < curso.teacher.length; i++){
-        curso.teacher[i] = app2.search_ID(curso.teacher[i]);
+        curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
     }
   }
   course.push(curso);
@@ -51,15 +51,16 @@ app.put('/:id', function (req, res) {
   console.log(index, filteredcourses[0], curso);
   if(index >= 0){
     if(curso.teacher){
+      course[index].teacher = [];
       for(let i = 0; i < curso.teacher.length; i++){
         console.log(app2.search_ID(curso.teacher[i]));
-        curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
+        course[index].teacher[i] = app2.search_ID(curso.teacher[i])[0];
       }
     }
     course[index].name = curso.name || course[index].name;
     course[index].period = curso.period || course[index].period;
     course[index].city = curso.phd || course[index].city;
-    course[index].teacher = curso.teacher || course[index].teacher;
+    //course[index].teacher = curso.teacher || course[index].teacher;
     res.send("Curso modificado com sucesso");
   }else res.status(404).send("Curso modificado com sucesso");  
 })

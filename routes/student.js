@@ -32,11 +32,18 @@ app.post('/', function (req, res) {
   if(student.course){
     console.log(student.course.length);
     let filteredcourses = student.course.filter(element => { return _curso.search_ID(element)!= ""});
-    student.course = filteredcourses;
-    console.log(student.course);
+    // student.course = filteredcourses;
+
+    student.course = _curso.search_ID(filteredcourses[0])[0];
+
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', filteredcourses[0], student.course);
+
+    /*console.log('>>>>>FILTERED COURSES', student.course);
   for(let i = 0; i < student.course.length; i++){
+    console.log('>>>>>>>>>>>>>>DENTRO DO LOOP', _curso.search_ID(student.course[i]));
     student.course[i] = _curso.search_ID(student.course[i]);
-  }
+    console.log(student.course[i], );
+  }*/
 }
 
   console.log(student);
@@ -56,14 +63,17 @@ app.put('/:id', function (req, res) {
   console.log(index, filteredstudent[0], estudantes);
   if(index >= 0){
     if(estudantes.course){
-      for(let i = 0; i < estudantes.course.length; i++){
-        estudantes.course[i] = _curso.search_ID(estudantes.course[i])[0];
-      }
+      console.log('fdesfwsefsfsafeavdagvrr', _curso.search_ID(estudantes.course[0]));
+      students[index].course = _curso.search_ID(estudantes.course[0])[0];
+      // for(let i = 0; i < estudantes.course.length; i++){
+      //   estudantes.course[i] = _curso.search_ID(estudantes.course[i]);
+      // }
     }
     students[index].name = estudantes.name || students[index].name;
     students[index].lastname = estudantes.lastname || students[index].lastname;
     students[index].age = estudantes.age || students[index].age;
-    students[index].course = estudantes.course || students[index].course;
+    console.log('>>>>>>>>>>>>>>>>>>>>.', estudantes.course, students[index].course);
+    //students[index].course = estudantes.course || students[index].course;
     error = false;
     res.send("Estudante cadastrado com sucesso");
   }else{
