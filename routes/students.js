@@ -4,9 +4,9 @@ const _curso = require('./course.js');
 
 var id = 0;
 
-var students = [{"id": ++id, "name": "Marcos", "lastname": "Gomes", "age": "23", "course": "Engenharia"},
-{"id": ++id, "name": "Jose", "lastname": "Gomes", "age": "23", "course": "Engenharia"},
-{"id": ++id, "name": "Gustavo", "lastname": "Gomes", "age": "23", "course": "Engenharia"},
+var students = [{"name": "Marcos", "lastname": "Gomes", "age": "23", "course": "Engenharia", "id": ++id},
+{"name": "Jose", "lastname": "Gomes", "age": "23", "course": "Engenharia", "id": ++id},
+{"name": "Gustavo", "lastname": "Gomes", "age": "23", "course": "Engenharia", "id": ++id}
 ]
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {

@@ -2,9 +2,9 @@ const express = require('express');
 const app = express.Router();
 
 id = 0;
-var teacher = [{"id": ++id, "name": "Marcos", "lastname":"Gomes", "phd": true},
-            {"id": ++id, "name": "Antonio", "lastname":"Nunes", "phd": false},
-            {"id": ++id, "name": "John", "lastname":"Doe", "phd": true}
+var teacher = [{"name": "Marcos", "lastname":"Gomes", "phd": true, "id": ++id},
+            {"name": "Antonio", "lastname":"Nunes", "phd": false, "id": ++id},
+            {"name": "John", "lastname":"Doe", "phd": true, "id": ++id}
 ]
 
 //-------------------------------GET--------------------------------

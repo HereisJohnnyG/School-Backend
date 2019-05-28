@@ -4,9 +4,9 @@ const app = express.Router();
 
 var id = 0;
 
-var user = [{"id": ++id, "name": "Marcos", "lastname":"Gomes", "profile": "user"},
-            {"id": ++id, "name": "Antonio", "lastname":"Nunes", "profile": "user"},
-            {"id": ++id, "name": "John", "lastname":"Doe", "profile": "admin"}
+var user = [{"name": "Marcos", "lastname":"Gomes", "profile": "user", "id": ++id},
+            {"name": "Antonio", "lastname":"Nunes", "profile": "user", "id": ++id},
+            {"name": "John", "lastname":"Doe", "profile": "admin", "id": ++id}
 ]
 
 //-------------------------------GET--------------------------------
@@ -28,6 +28,7 @@ app.get('/:id', function (req, res) {
 
 app.post('/', function (req, res) {
   let usuario = req.body;
+  
   //if(usuario.length > 0){
     console.log(usuario);
     usuario['id'] = ++id;

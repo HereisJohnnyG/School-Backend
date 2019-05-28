@@ -3,9 +3,9 @@ const app = express.Router();
 const app2 = require('./teacher.js');
 
 var id = 0;
-var course = [{"id": ++id, "name": "Engenharia", "period": "5", "teacher": 2, "city": "Timoteo"},
-{"id": ++id, "name": "Agronomia", "period": "1", "teacher": 3, "city": "Ipatinga"},
-{"id": ++id, "name": "Farmacia", "period": "7", "teacher": 1, "city": "Coronel Fabriciano"},
+var course = [{"name": "Engenharia", "period": "5", "teacher": 2, "city": "Timoteo", "id": ++id},
+{"name": "Agronomia", "period": "1", "teacher": 3, "city": "Ipatinga", "id": ++id},
+{"name": "Farmacia", "period": "7", "teacher": 1, "city": "Coronel Fabriciano", "id": ++id}
 ]
 
 
