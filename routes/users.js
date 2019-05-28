@@ -25,9 +25,6 @@ app.get('/:id', function (req, res) {
   }
 })
 //-------------------------------POST--------------------------------
-app.post('/', function (req, res) {
-  res.sendStatus(429);
-})
 
 app.post('/', function (req, res) {
   var usuario = req.body;
@@ -56,7 +53,7 @@ app.delete('/:id', function (req, res) {
 
 
 
-
+//------------------------EXPORT------------------------------
 
 
 module.exports = app;

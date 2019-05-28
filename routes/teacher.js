@@ -26,9 +26,6 @@ app.get('/:id', function (req, res) {
 })
 
 //------------------------POST------------------------------
-app.post('/', function (req, res) {
-  res.sendStatus(429);
-})
 
 app.post('/', function (req, res) {
   var professor = req.body;

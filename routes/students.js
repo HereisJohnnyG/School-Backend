@@ -27,10 +27,6 @@ app.get('/:name', function (req, res) {
 //-------------------------------POST--------------------------------
 
 app.post('/', function (req, res) {
-  res.sendStatus(429);
-})
-
-app.post('/', function (req, res) {
   var student = req.body;
   student['id'] = ++id;
   students.push(student);
@@ -63,6 +59,6 @@ app.delete('/:name', function (req, res) {
 
 
 
-
+//------------------------EXPORT------------------------------
 
 module.exports = app;
