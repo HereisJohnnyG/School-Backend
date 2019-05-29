@@ -50,32 +50,36 @@ app.get('/:id', function (req, res) {
 
 
 
-
-app.post('/', function (req, res) {
-  let cursos = req.body;
-  let professores = "";
-  cursos['id'] = ++id;
-  console.log(cursos.teacher);
-  if(cursos.teacher){
-    cursos.teacher.forEach(element => {
-      db.collection('teacher').find({"id": element}).toArray( (err, prof) => {
-      if(err){
-        console.error("Ocorreu um erro ao conectar a collection teacher");
-        send.status(500);
-      }else{
-        if(prof == []){
-        }else professores = professores + prof;
-        console.log('-----------------', professores);
+app.post('/', function(req, res) {
+  var course = req.body;
+  (async function() {
+    for (let i = 0; i < course.teacher.length; i++) {
+      let teachers = await _getOneTeacher(course.teacher[i]);
+      course.teacher[i] = teachers;
+    }
+    courseCollection.insertOne(course, (err, result) => {
+      if (err) {
+        console.error("Erro ao Criar Um Novo Curso", err);
+        res.status(500).send("Erro ao Criar Um Novo Curso");
+      } else {
+        res.status(201).send("Curso Cadastrado com Sucesso.");
       }
-      });
     });
-    console.log('-----------------', professores);
-    cursos.teacher = professores;
-    console.log(cursos);
-    db.collection('course').insert(cursos);
-    res.status(201).send("Curso cadastrado com sucesso");
-}
+  })();
 });
+
+const _getOneTeacher = function(id) {
+  return new Promise((resolve, reject) => {
+    db.collection('teacher').findOne({ "id" : id}, (err, teacher) => {
+      if (err)
+        return reject(err);
+      else
+        return resolve(teacher);
+    });
+  });
+};
+
+
 
 
 
