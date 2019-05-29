@@ -1,6 +1,19 @@
 const express = require('express');
 const app = express.Router();
 const app2 = require('./teacher.js');
+const mongoClient = require("mongodb").MongoClient;
+const mdbURL = "mongodb+srv://Jeffereson:31524@cluster0-5rgko.mongodb.net/test?retryWrites=true";
+var db;
+
+mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
+  if(err){
+    console.error("Ocorreu um erro ao conectar ao MongoDB");
+    send.status(500); //Internal server error
+  }
+  else{
+    db = database.db('trainee-prominas');
+  }
+});
 
 var id = 0;
 
@@ -8,38 +21,81 @@ course = [];
 //-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {
-  res.send(course);
-})
+  db.collection('course').find({}).toArray( (err, courses) => {
+    if(err){
+      console.error("Ocorreu um erro ao conectar a collection Course");
+      send.status(500);
+    }else res.send(courses);
+    
+  });
+});
+
 
 app.get('/:id', function (req, res) {
-  let id = req.params.id;
-  let filteredstudent = course.filter ( (s) => {return (s.id == id)} );
-  if(filteredstudent.length >= 1){
-    res.send(filteredstudent[0]);
-  }else{
-    res.status(404);
-    res.send("Curso não encontrado");
-  }
-})
+  let id = parseInt(req.params.id);
+  db.collection('course').find({"id": id}).toArray( (err, courses) => {
+    if(err){
+      console.error("Ocorreu um erro ao conectar a collection Course");
+      send.status(500);
+    }else{
+      if(courses == []){
+        res.status(404).send("Curso não encontrado");
+      }else res.send(courses);
+    } 
+    
+  });
+});
 
 //-------------------------------POST--------------------------------
 
+
+
+
 app.post('/', function (req, res) {
-  let curso = req.body;
-  curso['id'] = ++id;
+  let cursos = req.body;
+  let professores = "";
+  cursos['id'] = ++id;
+  console.log(cursos.teacher);
+  if(cursos.teacher){
+    cursos.teacher.forEach(element => {
+      db.collection('teacher').find({"id": element}).toArray( (err, prof) => {
+      if(err){
+        console.error("Ocorreu um erro ao conectar a collection teacher");
+        send.status(500);
+      }else{
+        if(prof == []){
+        }else professores = professores + prof;
+        console.log('-----------------', professores);
+      }
+      });
+    });
+    console.log('-----------------', professores);
+    cursos.teacher = professores;
+    console.log(cursos);
+    db.collection('course').insert(cursos);
+    res.status(201).send("Curso cadastrado com sucesso");
+}
+});
+
+
+
+
+// app.post('/', function (req, res) {
+//   let curso = req.body;
+//   curso['id'] = ++id;
   
-  if(curso.teacher){
-      console.log(curso.teacher.length);
-      let filteredteachers = curso.teacher.filter(element => { return app2.search_ID(element)!= ""});
-      curso.teacher = filteredteachers;
-      console.log(curso.teacher);
-    for(let i = 0; i < curso.teacher.length; i++){
-        curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
-    }
-  }
-  course.push(curso);
-  res.status(201).send("Curso cadastrado com sucesso");
-})
+//   if(curso.teacher){
+//       console.log(curso.teacher.length);
+//       let filteredteachers = curso.teacher.filter(element => { return app2.search_ID(element)!= ""});
+//       curso.teacher = filteredteachers;
+//       console.log(curso.teacher);
+//     for(let i = 0; i < curso.teacher.length; i++){
+//         curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
+//     }
+//   }
+//   course.push(curso);
+//   res.status(201).send("Curso cadastrado com sucesso");
+// })
 
 //------------------------PUT------------------------------
 
@@ -70,23 +126,43 @@ app.put('/:id', function (req, res) {
 
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
-  course = [];
-  res.send("Todos os Curso foram removidos com sucesso");
-})
+  db.collection('course').remove( {}, function(err, info){
+    if(err){
+      console.error("Ocorreu um erro ao deletar os usuários da coleção");
+      res.status(500);
+    }else{
+      let n_removed = info.result.n;
+      if(n_removed > 0){
+        console.log("INF: Todos os usuários" + n_removed + "foram removidos");
+        res.status(204).send("Todos os usuários foram removidos com sucesso");
+      }else{
+        console.log("Nenhum usuário foi removido");
+        res.status(404).send("Nenhum usuário foi removido");
+      } 
+    } 
+  });
+});
 
 app.delete('/:id', function (req, res) {
-  let id = req.params.id;
-  let filteredcourses = course.filter ( (s) => {return (s.id != id)} );
-  if(course.length >= 1 && course.length != filteredcourses.length){
-    course = filteredcourses;
-    res.send("Curso removido do sistema");
-  }else{
-    course = filteredcourses;
-    res.status(404);
-    res.send("Curso não encontrado");
-  }
-})
+  let id = parseInt(req.params.id);
 
+  db.collection('course').remove( {"id": id}, true, function(err, info){
+    if(err){
+      console.error("Ocorreu um erro ao deletar os curso da coleção");
+      res.status(500);
+    }else{
+      let n_removed = info.result.n;
+      if(n_removed > 0){
+        res.status(204)
+        res.send("Todos os curso foram removidos com sucesso");
+        console.log("INF: Todos os curso" + n_removed + "foram removidos");
+      }else{
+        console.log("Nenhum curso foi removido");
+        res.status(404).send("Nenhum professores foi removido");
+      } 
+    } 
+  });
+})
 //------------------------Functions------------------------------
 
 function search_ID(ide) {

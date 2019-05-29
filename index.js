@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoClient = require("mongodb").MongoClient;
 const app = express();
 var mdbURL = "mongodb+srv://Jeffereson:31524@cluster0-5rgko.mongodb.net/test?retryWrites=true";
+var db;
 
 const baseAPI = "/api/v1";
 
@@ -22,6 +23,6 @@ app.use(`${baseAPI}/course`, require('./routes/course').app);
 app.use(`${baseAPI}/teacher`, require('./routes/teacher').app);
 app.use(`${baseAPI}/user`, require('./routes/user'));
 
-const listener = app.listen(process.env.PORT || 3000, () => {
+const listener = app.listen(process.env.PORT || 3002, () => {
   console.log(`Server running on PORT ${listener.address().port}`);
 });

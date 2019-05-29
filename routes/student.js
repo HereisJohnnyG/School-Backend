@@ -1,25 +1,50 @@
 const express = require('express');
 const app = express.Router();
 const _curso = require('./course.js');
+const mongoClient = require("mongodb").MongoClient;
+const mdbURL = "mongodb+srv://Jeffereson:31524@cluster0-5rgko.mongodb.net/test?retryWrites=true";
+var db;
+
+mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
+  if(err){
+    console.error("Ocorreu um erro ao conectar ao MongoDB");
+    send.status(500); //Internal server error
+  }
+  else{
+    db = database.db('trainee-prominas');
+  }
+});
+
+
 
 var id = 0;
 
 var students = [];
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
-  res.send(students);
-})
+  db.collection('student').find({}).toArray( (err, estudantes) => {
+    if(err){
+      console.error("Ocorreu um erro ao conectar a collection Student");
+      send.status(500);
+    }else res.send(estudantes);
+    
+  });
+});
 
 app.get('/:id', function (req, res) {
-  let id = req.params.id;
-  let filteredstudent = students.filter ( (s) => {return (s.id == id)} );
-  if(filteredstudent.length >= 1){
-    res.send(filteredstudent[0]);
-  }else{
-    res.status(404);
-    res.send("Estudante não encontrado");
-  }
-})
+  let id = parseInt(req.params.id);
+  db.collection('student').find({"id": id}).toArray( (err, estudantes) => {
+    if(err){
+      console.error("Ocorreu um erro ao conectar a collection Student");
+      send.status(500);
+    }else{
+      if(estudantes == []){
+        res.status(404).send("Usuário não encontrado");
+      }else res.send(estudantes);
+    } 
+    
+  });
+});
 
 
 //-------------------------------POST--------------------------------
@@ -85,21 +110,42 @@ app.put('/:id', function (req, res) {
 
 
 app.delete('/', function (req, res) {
-  students = [];
-  res.send("Todos os estudante foram removidos com sucesso");
-})
+  db.collection('teacher').remove( {}, function(err, info){
+    if(err){
+      console.error("Ocorreu um erro ao deletar os usuários da coleção");
+      res.status(500);
+    }else{
+      let n_removed = info.result.n;
+      if(n_removed > 0){
+        console.log("INF: Todos os usuários" + n_removed + "foram removidos");
+        res.status(204).send("Todos os usuários foram removidos com sucesso");
+      }else{
+        console.log("Nenhum usuário foi removido");
+        res.status(404).send("Nenhum usuário foi removido");
+      } 
+    } 
+  });
+});
 
 app.delete('/:id', function (req, res) {
-  let id = req.params.id;
-  let filteredstudent = students.filter ( (s) => {return (s.id != id)} );
-  if(students.length >= 1 && students.length != filteredstudent.length){
-    students = filteredstudent;
-    res.send("Estudante removido do sistema");
-  }else{
-    students = filteredstudent;
-    res.status(404);
-    res.send("Estudante não encontrado");
-  }
+  let id = parseInt(req.params.id);
+
+  db.collection('student').remove( {"id": id}, true, function(err, info){
+    if(err){
+      console.error("Ocorreu um erro ao deletar os professores da coleção");
+      res.status(500);
+    }else{
+      let n_removed = info.result.n;
+      if(n_removed > 0){
+        res.status(204)
+        res.send("Todos os professores foram removidos com sucesso");
+        console.log("INF: Todos os professores" + n_removed + "foram removidos");
+      }else{
+        console.log("Nenhum professores foi removido");
+        res.status(404).send("Nenhum professores foi removido");
+      } 
+    } 
+  });
 })
 
 

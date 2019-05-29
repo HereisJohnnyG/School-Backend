@@ -18,10 +18,6 @@ mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
 
 var id = 0;
 
-var user = [{"name": "Marcos", "lastname":"Gomes", "profile": "user", "id": ++id},
-            {"name": "Antonio", "lastname":"Nunes", "profile": "user", "id": ++id},
-            {"name": "John", "lastname":"Doe", "profile": "admin", "id": ++id}
-]
 
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
