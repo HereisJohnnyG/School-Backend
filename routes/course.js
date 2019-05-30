@@ -87,6 +87,7 @@ app.put('/:id', function (req, res) {
 
   let courses = req.body;
   courses.id = parseInt(req.params.id);
+  let ide = parseInt(req.params.id);
   if(courses =={}){
     res.status(400).send("Solicitação não autorizada");
   }else{
@@ -95,7 +96,7 @@ app.put('/:id', function (req, res) {
         let teachers = await _getOneTeacher(courses.teacher[i]);
         courses.teacher[i] = teachers;
       }
-      db.collection('course').updateOne({"id": id}, { $set: courses }, (err, result) => {
+      db.collection('course').update({"id": ide}, { $set: courses }, (err, result) => {
         if (err) {
           console.error("Erro ao Criar Um Novo Curso", err);
           res.status(500).send("Erro ao Criar Um Novo Curso");
