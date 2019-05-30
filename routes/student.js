@@ -57,14 +57,18 @@ app.post('/', function(req, res) {
       let courses = await _getOneCourse(students.course[i]);
       students.course[i] = courses;
     }
-    db.collection('student').insertOne(students, (err, result) => {
-      if (err) {
-        console.error("Erro ao cadastrar Um Novo estudante", err);
-        res.status(500).send("Erro ao Criar Um Novo estudante");
-      } else {
-        res.status(201).send("estudante Cadastrado com Sucesso.");
-      }
-    });
+    if(students.course.length != 0){
+        db.collection('student').insertOne(students, (err, result) => {
+        if (err) {
+          console.error("Erro ao cadastrar um novo estudante", err);
+          res.status(500).send("Erro ao criar Um novo estudante");
+        } else {
+          res.status(201).send("Estudante Cadastrado com Sucesso.");
+        }
+      });
+    }else{
+      res.status(500).send("Erro ao Criar Um Novo estudante");
+  }
   })();
 });
 
@@ -84,16 +88,18 @@ const _getOneCourse = function(id) {
 app.put('/:id', function (req, res) {
 
   let students = req.body;
-  students.id = req.params.id;
+  let id = parseInt(req.params.id);
+  students.id = parseInt(req.params.id);
   if(students =={}){
     res.status(400).send("Solicitação não autorizada");
   }else{
     (async function() {
+      if(students.course.length > 0){
       for (let i = 0; i < students.course.length; i++) {
         let courses = await _getOneCourse(students.course[i]);
         students.course[i] = courses;
       }
-      db.collection('student').insertOne(students, (err, result) => {
+      db.collection('student').updateOne({"id": id}, { $set: students }, (err, result) => {
         if (err) {
           console.error("Erro ao Criar Um Novo Curso", err);
           res.status(500).send("Erro ao Criar Um Novo Curso");
@@ -101,6 +107,9 @@ app.put('/:id', function (req, res) {
           res.status(201).send("Curso Cadastrado com Sucesso.");
         }
       });
+    }else{
+      res.status(400).send("Necessário cadastrar um curso para o aluno");
+    }
     })();
   }
 });
@@ -109,7 +118,7 @@ app.put('/:id', function (req, res) {
 
 
 app.delete('/', function (req, res) {
-  db.collection('teacher').remove( {}, function(err, info){
+  db.collection('student').remove( {}, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");
       res.status(500);
