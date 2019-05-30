@@ -13,7 +13,7 @@ mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
   else{
     db = database.db('trainee-prominas');
   }
-});
+})
 
 var id = 0;
 
@@ -21,7 +21,7 @@ course = [];
 //-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {
-  db.collection('course').find({}).toArray( (err, courses) => {
+  db.collection('course').find({}, {projection: {_id: 0, id: 1, name: 1, period:1, teacher:1, city:1}}).toArray( (err, courses) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Course");
       send.status(500);
@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('course').find({"id": id}).toArray( (err, courses) => {
+  db.collection('course').find({"id": id}, {projection: {_id: 0, id: 1, name: 1, period:1, teacher:1, city:1}}).toArray( (err, courses) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Course");
       send.status(500);
@@ -51,22 +51,26 @@ app.get('/:id', function (req, res) {
 
 
 app.post('/', function(req, res) {
-  let course = req.body;
-  course.id = ++id;
-  (async function() {
-    for (let i = 0; i < course.teacher.length; i++) {
-      let teachers = await _getOneTeacher(course.teacher[i]);
-      course.teacher[i] = teachers;
-    }
-    db.collection('course').insertOne(course, (err, result) => {
-      if (err) {
-        console.error("Erro ao Criar Um Novo Curso", err);
-        res.status(500).send("Erro ao Criar Um Novo Curso");
-      } else {
-        res.status(201).send("Curso Cadastrado com Sucesso.");
+  let course = req.body;  
+  if(course.name && course.teacher && course.city){
+    course.status = 1;
+    course.period = parseInt(course.period) || 8;
+    course.id = ++id;
+    (async function() {
+      for (let i = 0; i < course.teacher.length; i++) {
+        let teachers = await _getOneTeacher(course.teacher[i]);
+        course.teacher[i] = teachers;
       }
-    });
-  })();
+      db.collection('course').insertOne(course, (err, result) => {
+        if (err) {
+          console.error("Erro ao Criar Um Novo Curso", err);
+          res.status(500).send("Erro ao Criar Um Novo Curso");
+        } else {
+          res.status(201).send("Curso Cadastrado com Sucesso.");
+        }
+      });
+    })();
+  }else res.status(403).send("Os dados devem ser preenchidos");
 });
 
 const _getOneTeacher = function(id) {
@@ -87,8 +91,9 @@ app.put('/:id', function (req, res) {
 
   let courses = req.body;
   courses.id = parseInt(req.params.id);
+  if(course.name && course.teacher && course.city){
   let ide = parseInt(req.params.id);
-  if(courses =={}){
+  if(courses =="{}"){
     res.status(400).send("Solicitação não autorizada");
   }else{
     (async function() {
@@ -106,30 +111,8 @@ app.put('/:id', function (req, res) {
       });
     })();
   }
+}else res.status(403).send("Os dados devem ser preenchidos");
 });
-
-
-/*app.put('/:id', function (req, res) {
-  let id = parseInt(req.params.id);
-  let curso = req.body;
-  let filteredcourses = course.filter ( (s) => {return (s.id == id)} );
-  let index = course.indexOf(filteredcourses[0]);
-  console.log(index, filteredcourses[0], curso);
-  if(index >= 0){
-    if(curso.teacher){
-      course[index].teacher = [];
-      for(let i = 0; i < curso.teacher.length; i++){
-        console.log(app2.search_ID(curso.teacher[i]));
-        course[index].teacher[i] = app2.search_ID(curso.teacher[i])[0];
-      }
-    }
-    course[index].name = curso.name || course[index].name;
-    course[index].period = curso.period || course[index].period;
-    course[index].city = curso.phd || course[index].city;
-    //course[index].teacher = curso.teacher || course[index].teacher;
-    res.send("Curso modificado com sucesso");
-  }else res.status(404).send("Curso modificado com sucesso");  
-})*/
 
 
 
@@ -144,10 +127,10 @@ app.delete('/', function (req, res) {
       let n_removed = info.result.n;
       if(n_removed > 0){
         console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(204).send("Todos os usuários foram removidos com sucesso");
+        res.status(200).send("Todos os usuários foram removidos com sucesso");
       }else{
         console.log("Nenhum usuário foi removido");
-        res.status(404).send("Nenhum usuário foi removido");
+        res.status(204).send("Nenhum usuário foi removido");
       } 
     } 
   });

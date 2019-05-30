@@ -50,9 +50,14 @@ app.get('/:id', function (req, res) {
 
 app.post('/', function (req, res) {
   let usuario = req.body;
+  if(usuario.name && usuario.lastname){
     usuario['id'] = ++id;
+    usuario.status = 1;
     db.collection('teacher').insert(usuario);
     res.status(201).send("Usuário cadastrado com sucesso");
+  }else {
+    res.status(403).send("Campo invalido");
+  }
 });
 
 //------------------------PUT------------------------------
@@ -60,7 +65,8 @@ app.post('/', function (req, res) {
 app.put('/:id', function (req, res) {
 
   let usuarios = req.body;
-  if(usuarios =={}){
+  if(usuario.name && usuario.lastname){
+  if(usuarios == "{}"){
     res.status(400).send("Solicitação não autorizada");
   }else{
     let id = parseInt(req.params.id);
@@ -68,6 +74,9 @@ app.put('/:id', function (req, res) {
     db.collection('teacher').update({"id": id}, usuarios);
     res.send("Professor modificado com sucesso");
   }
+}else {
+  res.status(403).send("Campo invalido");
+}
 });
 
 
@@ -82,10 +91,10 @@ app.delete('/', function (req, res) {
       let n_removed = info.result.n;
       if(n_removed > 0){
         console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(204).send("Todos os usuários foram removidos com sucesso");
+        res.status(200).send("Todos os usuários foram removidos com sucesso");
       }else{
         console.log("Nenhum usuário foi removido");
-        res.status(404).send("Nenhum usuário foi removido");
+        res.status(204).send("Nenhum usuário foi removido");
       } 
     } 
   });

@@ -21,7 +21,7 @@ var id = 0;
 
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
-  db.collection('user').find({}).toArray( (err, users) => {
+  db.collection('user').find({}, {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}}).toArray( (err, users) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection User");
       send.status(500);
@@ -32,7 +32,7 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('user').find({"id": id}).toArray( (err, users) => {
+  db.collection('user').find({"id": id}, {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}}).toArray( (err, users) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection User");
       send.status(500);
@@ -48,14 +48,13 @@ app.get('/:id', function (req, res) {
 
 app.post('/', function (req, res) {
   let usuario = req.body;
-  
-  //if(usuario.length > 0){
+  if(usuario.name && usuario.lastname && usuario.profile){
     console.log(usuario);
     usuario['id'] = ++id;
-    //user.push(usuario);
+    usuario.status = 1;
     db.collection('user').insert(usuario);
     res.status(201).send("Usuário cadastrado com sucesso");
-  //}else res.status(404).send("Não foi possível cadastrar o usuário")
+  }else res.status(403).send("Campo invalido");
 });
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
@@ -67,10 +66,10 @@ app.delete('/', function (req, res) {
       let n_removed = info.result.n;
       if(n_removed > 0){
         console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(204).send("Todos os usuários foram removidos com sucesso");
+        res.status(200).send("Todos os usuários foram removidos com sucesso");
       }else{
         console.log("Nenhum usuário foi removido");
-        res.status(404).send("Nenhum usuário foi removido");
+        res.status(204).send("Nenhum usuário foi removido");
       } 
     } 
   });
@@ -86,12 +85,12 @@ app.delete('/:id', function (req, res) {
     }else{
       let n_removed = info.result.n;
       if(n_removed > 0){
-        res.status(204)
+        res.status(200)
         res.send("Todos os usuários foram removidos com sucesso");
         console.log("INF: Todos os usuários" + n_removed + "foram removidos");
       }else{
         console.log("Nenhum usuário foi removido");
-        res.status(404).send("Nenhum usuário foi removido");
+        res.status(204).send("Nenhum usuário foi removido");
       } 
     } 
   });
@@ -100,18 +99,18 @@ app.delete('/:id', function (req, res) {
 //--------------------PUT-------------------------------
 
 app.put('/:id', function (req, res) {
-
-  let usuarios = req.body;
-  if(usuarios =={}){
-    res.status(400).send("Solicitação não autorizada");
-  }else{
-    let id = parseInt(req.params.id);
-    usuarios.id = id;
-    db.collection('user').update({"id": id}, usuarios);
-    res.send("Usuário modificado com sucesso");
-  }
-
-
+  
+    let usuarios = req.body;
+    if(usuarios.name && usuarios.lastname && usuarios.profile){
+      let id = parseInt(req.params.id);
+      usuarios.id = id;
+      usuarios.status = 1;
+      db.collection('user').findOneAndUpdate({"id": id, "status": 1}, usuarios, {new: true}, function (err, results){ 
+        if(results == 0) {
+          res.status(404).send("Nenhum campo atualizado")
+        }else res.send("Usuário modificado com sucesso");
+      });
+    }else res.status(403).send("Campo invalido");
 });
 
 

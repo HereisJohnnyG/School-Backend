@@ -51,25 +51,28 @@ app.get('/:id', function (req, res) {
 
 app.post('/', function(req, res) {
   let students = req.body;
-  students.id = ++id;
-  (async function() {
-    for (let i = 0; i < students.course.length; i++) {
-      let courses = await _getOneCourse(students.course[i]);
-      students.course[i] = courses;
+  if(students.name && students.lastname && students.age && students.course){
+    students.status = 1;
+    students.id = ++id;
+    (async function() {
+      for (let i = 0; i < students.course.length; i++) {
+        let courses = await _getOneCourse(students.course[i]);
+        students.course[i] = courses;
+      }
+      if(students.course.length != 0){
+          db.collection('student').insertOne(students, (err, result) => {
+          if (err) {
+            console.error("Erro ao cadastrar um novo estudante", err);
+            res.status(500).send("Erro ao criar Um novo estudante");
+          } else {
+            res.status(201).send("Estudante Cadastrado com Sucesso.");
+          }
+        });
+      }else{
+        res.status(500).send("Erro ao Criar Um Novo estudante");
     }
-    if(students.course.length != 0){
-        db.collection('student').insertOne(students, (err, result) => {
-        if (err) {
-          console.error("Erro ao cadastrar um novo estudante", err);
-          res.status(500).send("Erro ao criar Um novo estudante");
-        } else {
-          res.status(201).send("Estudante Cadastrado com Sucesso.");
-        }
-      });
-    }else{
-      res.status(500).send("Erro ao Criar Um Novo estudante");
+    })();
   }
-  })();
 });
 
 const _getOneCourse = function(id) {
@@ -88,6 +91,7 @@ const _getOneCourse = function(id) {
 app.put('/:id', function (req, res) {
 
   let students = req.body;
+  if(students.name && students.lastname && students.age && students.course){
   let id = parseInt(req.params.id);
   students.id = parseInt(req.params.id);
   let ide = parseInt(req.params.id);
@@ -102,10 +106,10 @@ app.put('/:id', function (req, res) {
       }
       db.collection('student').updateOne({"id": ide}, { $set: students }, (err, result) => {
         if (err) {
-          console.error("Erro ao Criar Um Novo Curso", err);
-          res.status(500).send("Erro ao Criar Um Novo Curso");
+          console.error("Erro ao editar Curso", err);
+          res.status(500).send("Erro ao editar Curso");
         } else {
-          res.status(201).send("Curso Cadastrado com Sucesso.");
+          res.status(201).send("Curso editado com Sucesso.");
         }
       });
     }else{
@@ -113,6 +117,7 @@ app.put('/:id', function (req, res) {
     }
     })();
   }
+}
 });
 
 //-------------------------------DELETE--------------------------------
@@ -127,10 +132,10 @@ app.delete('/', function (req, res) {
       let n_removed = info.result.n;
       if(n_removed > 0){
         console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(204).send("Todos os usuários foram removidos com sucesso");
+        res.status(200).send("Todos os usuários foram removidos com sucesso");
       }else{
         console.log("Nenhum usuário foi removido");
-        res.status(404).send("Nenhum usuário foi removido");
+        res.status(204).send("Nenhum usuário foi removido");
       } 
     } 
   });
@@ -146,12 +151,12 @@ app.delete('/:id', function (req, res) {
     }else{
       let n_removed = info.result.n;
       if(n_removed > 0){
-        res.status(204)
+        res.status(200)
         res.send("Todos os professores foram removidos com sucesso");
         console.log("INF: Todos os professores" + n_removed + "foram removidos");
       }else{
         console.log("Nenhum professores foi removido");
-        res.status(404).send("Nenhum professores foi removido");
+        res.status(204).send("Nenhum professores foi removido");
       } 
     } 
   });
