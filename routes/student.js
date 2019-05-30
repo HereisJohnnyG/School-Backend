@@ -49,63 +49,62 @@ app.get('/:id', function (req, res) {
 
 //-------------------------------POST--------------------------------
 
-app.post('/', function (req, res) {
-  var student = req.body;
-  student['id'] = ++id;
+app.post('/', function(req, res) {
+  let students = req.body;
+  students.id = ++id;
+  (async function() {
+    for (let i = 0; i < students.course.length; i++) {
+      let courses = await _getOneCourse(students.course[i]);
+      students.course[i] = courses;
+    }
+    db.collection('student').insertOne(students, (err, result) => {
+      if (err) {
+        console.error("Erro ao cadastrar Um Novo estudante", err);
+        res.status(500).send("Erro ao Criar Um Novo estudante");
+      } else {
+        res.status(201).send("estudante Cadastrado com Sucesso.");
+      }
+    });
+  })();
+});
 
-
-  if(student.course){
-    console.log(student.course.length);
-    let filteredcourses = student.course.filter(element => { return _curso.search_ID(element)!= ""});
-    // student.course = filteredcourses;
-
-    student.course = _curso.search_ID(filteredcourses[0])[0];
-
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', filteredcourses[0], student.course);
-
-    /*console.log('>>>>>FILTERED COURSES', student.course);
-  for(let i = 0; i < student.course.length; i++){
-    console.log('>>>>>>>>>>>>>>DENTRO DO LOOP', _curso.search_ID(student.course[i]));
-    student.course[i] = _curso.search_ID(student.course[i]);
-    console.log(student.course[i], );
-  }*/
-}
-
-  console.log(student);
-  students.push(student);
-  res.status(201).send("Estudante cadastrado com sucesso");
-})
+const _getOneCourse = function(id) {
+  return new Promise((resolve, reject) => {
+      db.collection('course').findOne({ "id" : id}, (err, course) => {
+      if (err)
+        return reject(err);
+      else
+        return resolve(course);
+    });
+  });
+};
 
 //-------------------------------PUT--------------------------------
 
 app.put('/:id', function (req, res) {
 
-
-  let id = parseInt(req.params.id);
-  let estudantes = req.body;
-  let filteredstudent = students.filter ( (s) => {return (s.id == id)} );
-  let index = students.indexOf(filteredstudent[0]);
-  console.log(index, filteredstudent[0], estudantes);
-  if(index >= 0){
-    if(estudantes.course){
-      console.log('fdesfwsefsfsafeavdagvrr', _curso.search_ID(estudantes.course[0]));
-      students[index].course = _curso.search_ID(estudantes.course[0])[0];
-      // for(let i = 0; i < estudantes.course.length; i++){
-      //   estudantes.course[i] = _curso.search_ID(estudantes.course[i]);
-      // }
-    }
-    students[index].name = estudantes.name || students[index].name;
-    students[index].lastname = estudantes.lastname || students[index].lastname;
-    students[index].age = estudantes.age || students[index].age;
-    console.log('>>>>>>>>>>>>>>>>>>>>.', estudantes.course, students[index].course);
-    //students[index].course = estudantes.course || students[index].course;
-    error = false;
-    res.send("Estudante cadastrado com sucesso");
+  let students = req.body;
+  students.id = req.params.id;
+  if(students =={}){
+    res.status(400).send("Solicitação não autorizada");
   }else{
-    res.status(404);
-    res.send("Estudante não encontrado");
+    (async function() {
+      for (let i = 0; i < students.course.length; i++) {
+        let courses = await _getOneCourse(students.course[i]);
+        students.course[i] = courses;
+      }
+      db.collection('student').insertOne(students, (err, result) => {
+        if (err) {
+          console.error("Erro ao Criar Um Novo Curso", err);
+          res.status(500).send("Erro ao Criar Um Novo Curso");
+        } else {
+          res.status(201).send("Curso Cadastrado com Sucesso.");
+        }
+      });
+    })();
   }
 });
+
 //-------------------------------DELETE--------------------------------
 
 

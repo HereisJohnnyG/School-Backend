@@ -51,7 +51,8 @@ app.get('/:id', function (req, res) {
 
 
 app.post('/', function(req, res) {
-  var course = req.body;
+  let course = req.body;
+  course.id = ++id;
   (async function() {
     for (let i = 0; i < course.teacher.length; i++) {
       let teachers = await _getOneTeacher(course.teacher[i]);
@@ -79,31 +80,35 @@ const _getOneTeacher = function(id) {
   });
 };
 
-
-
-
-
-
-// app.post('/', function (req, res) {
-//   let curso = req.body;
-//   curso['id'] = ++id;
-  
-//   if(curso.teacher){
-//       console.log(curso.teacher.length);
-//       let filteredteachers = curso.teacher.filter(element => { return app2.search_ID(element)!= ""});
-//       curso.teacher = filteredteachers;
-//       console.log(curso.teacher);
-//     for(let i = 0; i < curso.teacher.length; i++){
-//         curso.teacher[i] = app2.search_ID(curso.teacher[i])[0];
-//     }
-//   }
-//   course.push(curso);
-//   res.status(201).send("Curso cadastrado com sucesso");
-// })
-
 //------------------------PUT------------------------------
 
+
 app.put('/:id', function (req, res) {
+
+  let courses = req.body;
+  courses.id = req.params.id;
+  if(courses =={}){
+    res.status(400).send("Solicitação não autorizada");
+  }else{
+    (async function() {
+      for (let i = 0; i < courses.teacher.length; i++) {
+        let teachers = await _getOneTeacher(courses.teacher[i]);
+        courses.teacher[i] = teachers;
+      }
+      db.collection('course').insertOne(courses, (err, result) => {
+        if (err) {
+          console.error("Erro ao Criar Um Novo Curso", err);
+          res.status(500).send("Erro ao Criar Um Novo Curso");
+        } else {
+          res.status(201).send("Curso Cadastrado com Sucesso.");
+        }
+      });
+    })();
+  }
+});
+
+
+/*app.put('/:id', function (req, res) {
   let id = parseInt(req.params.id);
   let curso = req.body;
   let filteredcourses = course.filter ( (s) => {return (s.id == id)} );
@@ -123,7 +128,7 @@ app.put('/:id', function (req, res) {
     //course[index].teacher = curso.teacher || course[index].teacher;
     res.send("Curso modificado com sucesso");
   }else res.status(404).send("Curso modificado com sucesso");  
-})
+})*/
 
 
 
