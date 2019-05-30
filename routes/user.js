@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express.Router();
 const mongoClient = require("mongodb").MongoClient;
-const mdbURL = "mongodb+srv://Jeffereson:31524@cluster0-5rgko.mongodb.net/test?retryWrites=true";
+const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 var db;
 
 mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
@@ -37,7 +37,7 @@ app.get('/:id', function (req, res) {
       console.error("Ocorreu um erro ao conectar a collection User");
       send.status(500);
     }else{
-      if(user == []){
+      if(users == []){
         res.status(404).send("Usuário não encontrado");
       }else res.send(users);
     } 
@@ -56,7 +56,7 @@ app.post('/', function (req, res) {
     db.collection('user').insert(usuario);
     res.status(201).send("Usuário cadastrado com sucesso");
   //}else res.status(404).send("Não foi possível cadastrar o usuário")
-})
+});
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
   db.collection('user').remove( {}, function(err, info){
@@ -105,9 +105,8 @@ app.put('/:id', function (req, res) {
   if(usuarios =={}){
     res.status(400).send("Solicitação não autorizada");
   }else{
-    //console.log(usuario.id);
-    console.log(user.length);
     let id = parseInt(req.params.id);
+    usuarios.id = id;
     db.collection('user').update({"id": id}, usuarios);
     res.send("Usuário modificado com sucesso");
   }

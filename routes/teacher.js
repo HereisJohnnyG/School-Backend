@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express.Router();
 const mongoClient = require("mongodb").MongoClient;
-const mdbURL = "mongodb+srv://Jeffereson:31524@cluster0-5rgko.mongodb.net/test?retryWrites=true";
+const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 var db;
 
 mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {

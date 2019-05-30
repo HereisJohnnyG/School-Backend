@@ -2,7 +2,7 @@ const express = require('express');
 const app = express.Router();
 const app2 = require('./teacher.js');
 const mongoClient = require("mongodb").MongoClient;
-const mdbURL = "mongodb+srv://Jeffereson:31524@cluster0-5rgko.mongodb.net/test?retryWrites=true";
+const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 var db;
 
 mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
@@ -57,7 +57,7 @@ app.post('/', function(req, res) {
       let teachers = await _getOneTeacher(course.teacher[i]);
       course.teacher[i] = teachers;
     }
-    courseCollection.insertOne(course, (err, result) => {
+    db.collection('course').insertOne(course, (err, result) => {
       if (err) {
         console.error("Erro ao Criar Um Novo Curso", err);
         res.status(500).send("Erro ao Criar Um Novo Curso");
@@ -70,7 +70,7 @@ app.post('/', function(req, res) {
 
 const _getOneTeacher = function(id) {
   return new Promise((resolve, reject) => {
-    db.collection('teacher').findOne({ "id" : id}, (err, teacher) => {
+      db.collection('teacher').findOne({ "id" : id}, (err, teacher) => {
       if (err)
         return reject(err);
       else
