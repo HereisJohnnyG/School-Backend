@@ -22,7 +22,7 @@ var teacher = [];
 //-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {
-  db.collection('teacher').find({}).toArray( (err, teachers) => {
+  db.collection('teacher').find({'status':1}, {projection: {_id: 0, status: 0}}).toArray( (err, teachers) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection teacher");
       send.status(500);
@@ -34,7 +34,7 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('teacher').find({"id": id}).toArray( (err, teachers) => {
+  db.collection('teacher').find({"id": id, status: 1}, {projection: {_id: 0, status: 0}}).toArray( (err, teachers) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Teacher");
       send.status(500);
@@ -52,6 +52,9 @@ app.post('/', function (req, res) {
   let usuario = req.body;
   if(usuario.name && usuario.lastname){
     usuario['id'] = ++id;
+    if(typeof(req.body.phd) == 'boolean'){
+      usuarios.phd = req.body.phd;
+    }
     usuario.status = 1;
     db.collection('teacher').insert(usuario);
     res.status(201).send("Usuário cadastrado com sucesso");

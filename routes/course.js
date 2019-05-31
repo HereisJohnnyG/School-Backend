@@ -21,7 +21,7 @@ course = [];
 //-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {
-  db.collection('course').find({}, {projection: {_id: 0, id: 1, name: 1, period:1, teacher:1, city:1}}).toArray( (err, courses) => {
+  db.collection('course').find({'status':1, 'teacher.status': 1}, {projection: {'_id': 0, 'status':0, 'teacher.status': 0}}).toArray( (err, courses) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Course");
       send.status(500);
@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('course').find({"id": id}, {projection: {_id: 0, id: 1, name: 1, period:1, teacher:1, city:1}}).toArray( (err, courses) => {
+  db.collection('course').find({"id": id, "status": 1, 'teacher.status': 1}, {projection: {'_id': 0, 'status':0, 'teacher.status': 0}}).toArray( (err, courses) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Course");
       send.status(500);
@@ -51,16 +51,23 @@ app.get('/:id', function (req, res) {
 
 
 app.post('/', function(req, res) {
-  let course = req.body;  
-  if(course.name && course.teacher && course.city){
+  if(req.body.name && req.body.teacher && req.body.city){
     course.status = 1;
     course.period = parseInt(course.period) || 8;
     course.id = ++id;
+    let curso_var = req.body.teacher;
+    course.name = req.body.name;
+    course.teacher = [];
+    course.city = req.body.city;
     (async function() {
-      for (let i = 0; i < course.teacher.length; i++) {
-        let teachers = await _getOneTeacher(course.teacher[i]);
-        course.teacher[i] = teachers;
+      for (let i = 0; i < curso_var.length; i++) {
+        let teachers = await _getOneTeacher(curso_var[i]);
+        if(teachers != null){
+          
+          course.teacher.push(teachers);
+        }
       }
+      console.log(course.teachers, "<----------------->", typeof(course.teachers));
       db.collection('course').insertOne(course, (err, result) => {
         if (err) {
           console.error("Erro ao Criar Um Novo Curso", err);
@@ -75,7 +82,7 @@ app.post('/', function(req, res) {
 
 const _getOneTeacher = function(id) {
   return new Promise((resolve, reject) => {
-      db.collection('teacher').findOne({ "id" : id}, (err, teacher) => {
+      db.collection('teacher').findOne({ "id" : id, "status": 1}, (err, teacher) => {
       if (err)
         return reject(err);
       else
@@ -88,30 +95,34 @@ const _getOneTeacher = function(id) {
 
 
 app.put('/:id', function (req, res) {
-
-  let courses = req.body;
-  courses.id = parseInt(req.params.id);
-  if(course.name && course.teacher && course.city){
-  let ide = parseInt(req.params.id);
-  if(courses =="{}"){
-    res.status(400).send("Solicitação não autorizada");
-  }else{
-    (async function() {
-      for (let i = 0; i < courses.teacher.length; i++) {
-        let teachers = await _getOneTeacher(courses.teacher[i]);
-        courses.teacher[i] = teachers;
-      }
-      db.collection('course').update({"id": ide}, { $set: courses }, (err, result) => {
-        if (err) {
-          console.error("Erro ao Criar Um Novo Curso", err);
-          res.status(500).send("Erro ao Criar Um Novo Curso");
-        } else {
-          res.status(201).send("Curso modificado com Sucesso.");
+  if(req.params.name && req.params.teacher && req.params.city){
+    courses.id = parseInt(req.params.id);
+    courses.name = re.params.name;
+    courses.teacher = req.params.teacher;
+    courses.city = req.params.city;
+    course.status = 1;
+    let ide = parseInt(req.params.id);
+    if(courses =="{}"){
+      res.status(400).send("Solicitação não autorizada");
+    }else{
+      (async function() {
+        for (let i = 0; i < courses.teacher.length; i++) {
+          let teachers = await _getOneTeacher(courses.teacher[i]);
+          if(teachers != null){
+            courses.teacher.push(teachers);
+          }
         }
-      });
-    })();
-  }
-}else res.status(403).send("Os dados devem ser preenchidos");
+        db.collection('course').update({"id": ide}, { $set: courses }, (err, result) => {
+          if (err) {
+            console.error("Erro ao Criar Um Novo Curso", err);
+            res.status(500).send("Erro ao Criar Um Novo Curso");
+          } else {
+            res.status(201).send("Curso modificado com Sucesso.");
+          }
+        });
+      })();
+    }
+  }else res.status(403).send("Os dados devem ser preenchidos");
 });
 
 
