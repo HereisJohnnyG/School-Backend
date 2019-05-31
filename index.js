@@ -2,8 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoClient = require("mongodb").MongoClient;
 const app = express();
-var mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
-var db;
+
 
 const baseAPI = "/api/v1";
 

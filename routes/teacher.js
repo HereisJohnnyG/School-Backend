@@ -4,7 +4,7 @@ const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 var db;
 
-mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
+mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){
     console.error("Ocorreu um erro ao conectar ao MongoDB");
     send.status(500); //Internal server error

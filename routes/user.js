@@ -5,7 +5,7 @@ const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 var db;
 
-mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
+mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){
     console.error("Ocorreu um erro ao conectar ao MongoDB");
     send.status(500); //Internal server error
@@ -13,26 +13,24 @@ mongoClient.connect(mdbURL, {native_parser:true}, (err, database) => {
   else{
     db = database.db('trainee-prominas');
   }
-});
-
+})
 
 var id = 0;
 
 
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
-  db.collection('user').find({}, {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}}).toArray( (err, users) => {
-    if(err){
-      console.error("Ocorreu um erro ao conectar a collection User");
-      send.status(500);
-    }else res.send(users);
-    
+  db.collection('user').find({status:1}, {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}}).toArray( (err, users) => {
+  if(err){
+    console.error("Ocorreu um erro ao conectar a collection User");
+    send.status(500);
+  }else res.send(users);
   });
 });
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('user').find({"id": id}, {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}}).toArray( (err, users) => {
+  db.collection('user').find({"id": id, status:1}, {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}}).toArray( (err, users) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection User");
       send.status(500);
@@ -49,7 +47,6 @@ app.get('/:id', function (req, res) {
 app.post('/', function (req, res) {
   let usuario = req.body;
   if(usuario.name && usuario.lastname && usuario.profile){
-    console.log(usuario);
     usuario['id'] = ++id;
     usuario.status = 1;
     db.collection('user').insert(usuario);
@@ -77,8 +74,21 @@ app.delete('/', function (req, res) {
 
 app.delete('/:id', function (req, res) {
   let id = parseInt(req.params.id);
+  //------------Alternate status to 1 for "delete" ---------------------//
+  db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}}, function (err, results){ 
+    console.log('---------_>',results);
+    if(err){
+      console.error("Ocorreu um erro ao deletar os usuários da coleção");
+      res.status(500);
+    }else
+    if(results.value == null) {
+      res.status(403).send("Não foi possivel encontrar o usuário")
+    }else res.send("Usuário excluido com sucesso");
+  });
 
-  db.collection('user').remove( {"id": id}, true, function(err, info){
+
+  /*-----------------Old version--------------------------
+    db.collection('user').remove( {"id": id}, true, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");
       res.status(500);
@@ -93,21 +103,25 @@ app.delete('/:id', function (req, res) {
         res.status(204).send("Nenhum usuário foi removido");
       } 
     } 
-  });
+  });*/
 })
 
 //--------------------PUT-------------------------------
 
 app.put('/:id', function (req, res) {
   
-    let usuarios = req.body;
-    if(usuarios.name && usuarios.lastname && usuarios.profile){
+    let usuarios = [];
+    usuarios.name = req.body.name;
+    usuarios.lastname = req.body.lastname;
+    usuarios.profile = req.body.profile;
+    if(req.body.name && req.body.lastname && req.body.profile){
       let id = parseInt(req.params.id);
       usuarios.id = id;
       usuarios.status = 1;
-      db.collection('user').findOneAndUpdate({"id": id, "status": 1}, usuarios, {new: true}, function (err, results){ 
-        if(results == 0) {
-          res.status(404).send("Nenhum campo atualizado")
+      db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
+        console.log('---------_>',results);
+        if(results == null) {
+          res.status(403).send("Não foi possivel completar a atualização")
         }else res.send("Usuário modificado com sucesso");
       });
     }else res.status(403).send("Campo invalido");

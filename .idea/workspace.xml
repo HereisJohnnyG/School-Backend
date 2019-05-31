@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c4c7cd58-683f-4a4b-aa81-d6b60e9950db" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/routes/course.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/course.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/student.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/student.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/teacher.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/teacher.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -122,12 +119,12 @@
       <option name="presentableId" value="Default" />
       <updated>1559153937153</updated>
       <workItem from="1559153938314" duration="1408000" />
-      <workItem from="1559214595769" duration="8256000" />
+      <workItem from="1559214595769" duration="8855000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9664000" />
+    <option name="totallyTimeSpent" value="10263000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -140,7 +137,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1366" height="702" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23752792" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
