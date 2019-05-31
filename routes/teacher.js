@@ -63,19 +63,20 @@ app.post('/', function (req, res) {
 //------------------------PUT------------------------------
 
 app.put('/:id', function (req, res) {
-
+  if(req.body.name && req.body.lastname){
   let usuarios = req.body;
-  if(usuario.name && usuario.lastname){
-  if(usuarios == "{}"){
-    res.status(400).send("Solicitação não autorizada");
-  }else{
-    let id = parseInt(req.params.id);
-    usuarios.id = id;
-    db.collection('teacher').update({"id": id}, usuarios);
-    res.send("Professor modificado com sucesso");
+  usuarios.nome = req.body.name;
+  usuarios.lastname = req.body.lastname
+  if(typeof(req.body.phd) == 'boolean'){
+    usuarios.phd = req.body.phd;
   }
-}else {
-  res.status(403).send("Campo invalido");
+  let id = parseInt(req.params.id);
+  usuarios.id = id;
+  db.collection('teacher').findOneAndUpdate({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
+    if(results == null) {
+      res.status(403).send("Não foi possivel completar a atualização")
+    }else res.send("Usuário modificado com sucesso");
+  });
 }
 });
 
@@ -83,6 +84,7 @@ app.put('/:id', function (req, res) {
 
 //------------------------DELETE------------------------------
 app.delete('/', function (req, res) {
+
   db.collection('teacher').remove( {}, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");
@@ -102,8 +104,19 @@ app.delete('/', function (req, res) {
 
 app.delete('/:id', function (req, res) {
   let id = parseInt(req.params.id);
+  //------------Alternate status to 1 for "delete" ---------------------//
 
-  db.collection('teacher').remove( {"id": id}, true, function(err, info){
+  db.collection('teacher').findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}}, function (err, results){ 
+      if(err){
+        console.error("Ocorreu um erro ao deletar os usuários da coleção");
+        res.status(500);
+      }else
+      if(results.value == null) {
+        res.status(204).send("Não foi possivel encontrar o usuário")
+      }else res.send("Usuário excluido com sucesso");
+    });
+});
+  /*db.collection('teacher').remove( {"id": id}, true, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os professores da coleção");
       res.status(500);
@@ -118,8 +131,7 @@ app.delete('/:id', function (req, res) {
         res.status(404).send("Nenhum professores foi removido");
       } 
     } 
-  });
-})
+  })*/
 
 
 //------------------------Functions------------------------------

@@ -55,7 +55,9 @@ app.post('/', function (req, res) {
 });
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
-  db.collection('user').remove( {}, function(err, info){
+  res.status(500).send("Função não implementada");
+  
+  /* ------------------- DELETE ALL             db.collection('user').remove( {}, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");
       res.status(500);
@@ -70,6 +72,7 @@ app.delete('/', function (req, res) {
       } 
     } 
   });
+  */
 });
 
 app.delete('/:id', function (req, res) {
@@ -82,7 +85,7 @@ app.delete('/:id', function (req, res) {
       res.status(500);
     }else
     if(results.value == null) {
-      res.status(403).send("Não foi possivel encontrar o usuário")
+      res.status(204).send("Não foi possivel encontrar o usuário")
     }else res.send("Usuário excluido com sucesso");
   });
 
@@ -117,7 +120,6 @@ app.put('/:id', function (req, res) {
     if(req.body.name && req.body.lastname && req.body.profile){
       let id = parseInt(req.params.id);
       usuarios.id = id;
-      usuarios.status = 1;
       db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
         console.log('---------_>',results);
         if(results == null) {
