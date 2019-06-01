@@ -21,7 +21,7 @@ course = [];
 //-------------------------------GET--------------------------------
 
 app.get('/', function (req, res) {
-  db.collection('course').find({'status':1, 'teacher.status': 1}, {projection: {'_id': 0, 'status':0, 'teacher.status': 0}}).toArray( (err, courses) => {
+  db.collection('course').find({'status':1}, {projection: {'_id': 0, 'status':0, 'teacher._id': 0, 'teacher.status': 0}}).toArray( (err, courses) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Course");
       send.status(500);
@@ -52,35 +52,38 @@ app.get('/:id', function (req, res) {
 
 app.post('/', function(req, res) {
   course = req.body;
-  if(req.body.name && req.body.teacher && req.body.city){
+  if(req.body.name && req.body.city){
     course.status = 1;
     course.period = parseInt(course.period) || 8;
     course.id = ++id;
     let curso_var = req.body.teacher;
-    course.name = req.body.name;
+    console.log("----------",curso_var);
     course.teacher = [];
-    course.city = req.body.city;
     (async function() {
       for (let i = 0; i < curso_var.length; i++) {
-        let teachers = await _getOneTeacher(curso_var[i]);
+        let teachers = await search_teacher(curso_var[i]);
         if(teachers != null){
           
           course.teacher.push(teachers);
         }
       }
+      console.log(course);
       db.collection('course').insertOne(course, (err, result) => {
         if (err) {
           console.error("Erro ao Criar Um Novo Curso", err);
           res.status(500).send("Erro ao Criar Um Novo Curso");
-        } else {
-          res.status(201).send("Curso Cadastrado com Sucesso.");
+        } else{
+          console.log('result',result);
+          if(course.teacher.length < curso_var.length){
+            res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
+          }else res.status(201).send("Curso Cadastrado com Sucesso.");
         }
       });
     })();
   }else res.status(403).send("Os dados devem ser preenchidos");
 });
 
-const _getOneTeacher = function(id) {
+function search_teacher(id) {
   return new Promise((resolve, reject) => {
       db.collection('teacher').findOne({ "id" : id, "status": 1}, (err, teacher) => {
       if (err)
