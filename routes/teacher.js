@@ -17,7 +17,6 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
 
 
 id = 0;
-var teacher = [];
 
 //-------------------------------GET--------------------------------
 
@@ -66,19 +65,29 @@ app.post('/', function (req, res) {
 //------------------------PUT------------------------------
 
 app.put('/:id', function (req, res) {
-  if(req.body.name && req.body.lastname){
+  if(req.body.name && req.body.lastname){ //Business rule (name and lastname must have a value
   let usuarios = req.body;
-  usuarios.nome = req.body.name;
+  //Fill teachers data
+  usuarios.name = req.body.name;
   usuarios.lastname = req.body.lastname
+  
+  //verifica se o PHD é booleano
   if(typeof(req.body.phd) == 'boolean'){
+    console.log('1',req.body.phd);
     usuarios.phd = req.body.phd;
-  }
+  }else usuarios.phd = "";
+
   let id = parseInt(req.params.id);
   usuarios.id = id;
+  usuarios.status = 1;
+  console.log('2', usuarios);
   db.collection('teacher').findOneAndUpdate({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
     if(results == null) {
       res.status(403).send("Não foi possivel completar a atualização")
-    }else res.send("Usuário modificado com sucesso");
+    }else{
+      res.send("Usuário modificado com sucesso");
+      db.collection('teacher').findOneAndUpdate({"id": id, "status": 1}, {$unset: {phd: ""}});
+    }
   });
 }
 });
@@ -100,8 +109,8 @@ app.delete('/', function (req, res) {
       }else{
         console.log("Nenhum usuário foi removido");
         res.status(204).send("Nenhum usuário foi removido");
-      } 
-    } 
+      }
+    }
   });
 });
 
@@ -138,12 +147,15 @@ app.delete('/:id', function (req, res) {
 
 
 //------------------------Functions------------------------------
+//Function deprecated
 
-function search_ID(ide) {
+/*function search_ID(ide) {
     let result = teacher.filter ( (s) => {return (s.id == ide)} );
     return(result);
-}
+}*/
 
 
 //------------------------EXPORT------------------------------
-module.exports = {app, search_ID};
+/* module.exports = {app, search_ID}; */
+
+module.exports = {app}

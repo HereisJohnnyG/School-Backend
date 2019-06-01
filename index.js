@@ -33,10 +33,16 @@ app.post(baseAPI, function (req, res) {
   res.send('Hello World');
 });
 
+
+// ROUTE CONFIGURATION
+
 app.use(`${baseAPI}/student`, require('./routes/student'));
 app.use(`${baseAPI}/course`, require('./routes/course').app);
 app.use(`${baseAPI}/teacher`, require('./routes/teacher').app);
 app.use(`${baseAPI}/user`, require('./routes/user'));
+
+
+//Listening on Heroku or localhost:3000
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log(`Server running on PORT ${listener.address().port}`);
