@@ -51,6 +51,7 @@ app.get('/:id', function (req, res) {
 
 
 app.post('/', function(req, res) {
+  course = req.body;
   if(req.body.name && req.body.teacher && req.body.city){
     course.status = 1;
     course.period = parseInt(course.period) || 8;
@@ -67,7 +68,6 @@ app.post('/', function(req, res) {
           course.teacher.push(teachers);
         }
       }
-      console.log(course.teachers, "<----------------->", typeof(course.teachers));
       db.collection('course').insertOne(course, (err, result) => {
         if (err) {
           console.error("Erro ao Criar Um Novo Curso", err);
