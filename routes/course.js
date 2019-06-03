@@ -5,6 +5,8 @@ const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 var db;
 
+var id = 0;
+
 mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){
     console.error("Ocorreu um erro ao conectar ao MongoDB");
@@ -16,7 +18,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
 })
 
-var id = 0;
+
 
 course = [];
 //-------------------------------GET--------------------------------
@@ -56,7 +58,7 @@ app.get('/:id', function (req, res) {
 app.post('/', function(req, res) {
   course = {};
   if(req.body.name && req.body.city){
-
+    
     course.status = 1;
     course.name = req.body.name;
     course.city = req.body.city
@@ -105,11 +107,14 @@ function search_teacher(id) {
 
 
 app.put('/:id', function (req, res) {
-  if(req.params.name && req.params.teacher && req.params.city){
+  courses = {};
+  courses.name = req.body.name;
+  courses.teacher = req.body.teacher;
+  courses.city = req.body.city;
+  console.log(courses.name, courses.city)  ;
+  if(courses.name || courses.city){
+
     courses.id = parseInt(req.params.id);
-    courses.name = re.params.name;
-    courses.teacher = req.params.teacher;
-    courses.city = req.params.city;
     course.status = 1;
     let ide = parseInt(req.params.id);
     if(courses =="{}"){
@@ -117,17 +122,31 @@ app.put('/:id', function (req, res) {
     }else{
       (async function() {
         for (let i = 0; i < courses.teacher.length; i++) {
-          let teachers = await _getOneTeacher(courses.teacher[i]);
+          let teachers = await search_teacher(courses.teacher[i]);
           if(teachers != null){
             courses.teacher.push(teachers);
           }
         }
-        db.collection('course').update({"id": ide}, { $set: courses }, (err, result) => {
+        db.collection('course').updateOne({"id": ide}, { $set: courses }, (err, result) => {
           if (err) {
             console.error("Erro ao Criar Um Novo Curso", err);
             res.status(500).send("Erro ao Criar Um Novo Curso");
           } else {
-            res.status(201).send("Curso modificado com Sucesso.");
+            db.collection('student').updateMany(
+              { "course.id": courses.id }, 
+              { $set: { "course.$": courses } }, 
+              function(err_course, results){
+                if(err_course){
+                  res.send("Erro na inserção do curso");
+                }          
+                else if(results.matchedCount > 0){
+                  res.send("curso modificado com sucesso");
+                }
+                else{
+                  res.send('Erro na modificação');
+                }
+            })
+            //res.status(201).send("Curso modificado com Sucesso.");
           }
         });
       })();
@@ -140,22 +159,22 @@ app.put('/:id', function (req, res) {
 
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
-  // res.status(204).send("Função desativada");
-  db.collection('course').remove( {}, function(err, info){
-    if(err){
-      console.error("Ocorreu um erro ao deletar os usuários da coleção");
-      res.status(500);
-    }else{
-      let n_removed = info.result.n;
-      if(n_removed > 0){
-        console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(200).send("Todos os usuários foram removidos com sucesso");
-      }else{
-        console.log("Nenhum usuário foi removido");
-        res.status(204).send("Nenhum usuário foi removido");
-      } 
-    } 
-  });
+   res.status(204).send("Função desativada");
+  // db.collection('course').remove( {}, function(err, info){
+  //   if(err){
+  //     console.error("Ocorreu um erro ao deletar os usuários da coleção");
+  //     res.status(500);
+  //   }else{
+  //     let n_removed = info.result.n;
+  //     if(n_removed > 0){
+  //       console.log("INF: Todos os usuários" + n_removed + "foram removidos");
+  //       res.status(200).send("Todos os usuários foram removidos com sucesso");
+  //     }else{
+  //       console.log("Nenhum usuário foi removido");
+  //       res.status(204).send("Nenhum usuário foi removido");
+  //     } 
+  //   } 
+  // });
 });
 
 app.delete('/:id', function (req, res) {

@@ -67,7 +67,7 @@ app.post('/', function (req, res) {
 
 app.put('/:id', function (req, res) {
   if(req.body.name && req.body.lastname){ //Business rule (name and lastname must have a value
-  let usuarios = [];
+  let usuarios = {};
   //Fill teachers data
   usuarios.name = req.body.name;
   usuarios.lastname = req.body.lastname
@@ -82,7 +82,7 @@ app.put('/:id', function (req, res) {
   usuarios.id = id;
   usuarios.status = 1;
 
-  console.log('2', usuarios);
+  
   db.collection('teacher').findOneAndReplace(
     {"id": id, "status": 1},
     {...usuarios},
@@ -91,15 +91,21 @@ app.put('/:id', function (req, res) {
         res.status(403).send("Não foi possivel completar a atualização")
       }else{
         console.log('chegou aki');
-        db.collection('course').updateOne(
+        console.log('2', usuarios);
+        db.collection('course').updateMany(
           { "teacher.id": usuarios.id }, 
-          { "$set": { "teacher.$": usuarios } }), 
-          function(err_course, results){          
-            if(!err_course)
+          { $set: { "teacher.$": usuarios } }, 
+          function(err_course, results){
+            if(err_course){
+              res.send("Erro na inserção do professor");
+            }          
+            else if(results){
               res.send("Usuário modificado com sucesso");
-            else
-              res.send('Erro na modificação')
-        }
+            }
+            else{
+              res.send('Erro na modificação');
+            }
+        })
       }
     });
     }
@@ -109,22 +115,22 @@ app.put('/:id', function (req, res) {
 
 //------------------------DELETE------------------------------
 app.delete('/', function (req, res) {
-  // res.status(204).send("Função desativada");
-  db.collection('teacher').remove( {}, function(err, info){
-    if(err){
-      console.error("Ocorreu um erro ao deletar os usuários da coleção");
-      res.status(500);
-    }else{
-      let n_removed = info.result.n;
-      if(n_removed > 0){
-        console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(200).send("Todos os usuários foram removidos com sucesso");
-      }else{
-        console.log("Nenhum usuário foi removido");
-        res.status(204).send("Nenhum usuário foi removido");
-      }
-    }
-  });
+   res.status(204).send("Função desativada");
+  // db.collection('teacher').remove( {}, function(err, info){
+  //   if(err){
+  //     console.error("Ocorreu um erro ao deletar os usuários da coleção");
+  //     res.status(500);
+  //   }else{
+  //     let n_removed = info.result.n;
+  //     if(n_removed > 0){
+  //       console.log("INF: Todos os usuários" + n_removed + "foram removidos");
+  //       res.status(200).send("Todos os usuários foram removidos com sucesso");
+  //     }else{
+  //       console.log("Nenhum usuário foi removido");
+  //       res.status(204).send("Nenhum usuário foi removido");
+  //     }
+  //   }
+  // });
 });
 
 app.delete('/:id', function (req, res) {

@@ -69,7 +69,7 @@ app.post('/', function(req, res) {
         }
         //students.course[i] = courses;
       }
-      if(students.course > 0){
+      if(students.course.length > 0){
           db.collection('student').insertOne(students, (err, result) => {
           if (err) {
             console.error("Erro ao cadastrar um novo estudante", err);
@@ -144,22 +144,22 @@ app.put('/:id', function (req, res) {
 
 
 app.delete('/', function (req, res) {
-  // res.status(204).send("Função desativada");
-  db.collection('student').remove( {}, function(err, info){
-    if(err){
-      console.error("Ocorreu um erro ao deletar os usuários da coleção");
-      res.status(500);
-    }else{
-      let n_removed = info.result.n;
-      if(n_removed > 0){
-        console.log("INF: Todos os usuários" + n_removed + "foram removidos");
-        res.status(200).send("Todos os usuários foram removidos com sucesso");
-      }else{
-        console.log("Nenhum usuário foi removido");
-        res.status(204).send("Nenhum usuário foi removido");
-      } 
-    } 
-  });
+   res.status(204).send("Função desativada");
+  // db.collection('student').remove( {}, function(err, info){
+  //   if(err){
+  //     console.error("Ocorreu um erro ao deletar os usuários da coleção");
+  //     res.status(500);
+  //   }else{
+  //     let n_removed = info.result.n;
+  //     if(n_removed > 0){
+  //       console.log("INF: Todos os usuários" + n_removed + "foram removidos");
+  //       res.status(200).send("Todos os usuários foram removidos com sucesso");
+  //     }else{
+  //       console.log("Nenhum usuário foi removido");
+  //       res.status(204).send("Nenhum usuário foi removido");
+  //     } 
+  //   } 
+  // });
 });
 
 app.delete('/:id', function (req, res) {
