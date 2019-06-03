@@ -71,25 +71,27 @@ app.put('/:id', function (req, res) {
   usuarios.name = req.body.name;
   usuarios.lastname = req.body.lastname
   
-  //verifica se o PHD é booleano
+  //verify if PHD is boolean
   if(typeof(req.body.phd) == 'boolean'){
     console.log('1',req.body.phd);
     usuarios.phd = req.body.phd;
-  }else usuarios.phd = "";
+  }
 
   let id = parseInt(req.params.id);
   usuarios.id = id;
   usuarios.status = 1;
+
   console.log('2', usuarios);
-  db.collection('teacher').findOneAndUpdate({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
-    if(results == null) {
-      res.status(403).send("Não foi possivel completar a atualização")
-    }else{
-      res.send("Usuário modificado com sucesso");
-      db.collection('teacher').findOneAndUpdate({"id": id, "status": 1}, {$unset: {phd: ""}});
+  db.collection('teacher').findOneAndReplace({"id": id, "status": 1},
+    {"id": usuarios.id, "name": usuarios.name, "lastname": usuarios.lastname, "status": usuarios.status, "phd": usuarios.phd}, 
+    function (err, results){ 
+      if(results == null) {
+        res.status(403).send("Não foi possivel completar a atualização")
+      }else{
+        res.send("Usuário modificado com sucesso");
+      }
+    });
     }
-  });
-}
 });
 
 
