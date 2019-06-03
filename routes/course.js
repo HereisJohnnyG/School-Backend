@@ -12,6 +12,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
+    db.collection('course').find({}).toArray((err, course) =>{id = course.length});
   }
 })
 
@@ -51,11 +52,15 @@ app.get('/:id', function (req, res) {
 
 
 app.post('/', function(req, res) {
-  course = req.body;
+  course = {};
   if(req.body.name && req.body.city){
+
     course.status = 1;
+    course.name = req.body.name;
+    course.city = req.body.city
     course.period = parseInt(course.period) || 8;
     course.id = ++id;
+
     let curso_var = req.body.teacher;
     console.log("----------",curso_var);
     course.teacher = [];
@@ -153,21 +158,22 @@ app.delete('/', function (req, res) {
 app.delete('/:id', function (req, res) {
   let id = parseInt(req.params.id);
 
-  db.collection('course').remove( {"id": id}, true, function(err, info){
-    if(err){
-      console.error("Ocorreu um erro ao deletar os curso da coleção");
-      res.status(500);
-    }else{
-      let n_removed = info.result.n;
-      if(n_removed > 0){
-        res.status(204)
-        res.send("Todos os curso foram removidos com sucesso");
-        console.log("INF: Todos os curso" + n_removed + "foram removidos");
+  db.collection('course').findOneAndUpdate(
+    {"id": id, "status": 1}, 
+    {$set: {status: 0}}, 
+    function(err, info){
+      if(err){
+        console.error("Ocorreu um erro ao deletar o curso da coleção");
+        res.status(500);
       }else{
-        console.log("Nenhum curso foi removido");
-        res.status(404).send("Nenhum professores foi removido");
+        if(err){
+          console.error("Ocorreu um erro ao deletar o curso da coleção");
+          res.status(500);
+        }else
+        if(info.value == null) {
+          res.status(204).send("Não foi possivel encontrar o curso")
+        }else res.send("Usuário excluido com sucesso");
       } 
-    } 
   });
 })
 //------------------------Functions------------------------------

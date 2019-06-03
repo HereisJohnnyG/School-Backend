@@ -12,6 +12,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
+    db.collection('user').find({}).toArray((err, user) =>{id = user.length});
   }
 })
 
@@ -45,7 +46,12 @@ app.get('/:id', function (req, res) {
 //-------------------------------POST--------------------------------
 
 app.post('/', function (req, res) {
-  let usuario = req.body;
+  
+  let usuario = {};
+  usuario.name = req.body.name;
+  usuario.lastname = req.body.lastname;
+  usuario.profile = req.body.profile;
+  
   if(usuario.name && usuario.lastname && usuario.profile){
     usuario['id'] = ++id;
     usuario.status = 1;

@@ -2,7 +2,8 @@ const express = require('express');
 const app = express.Router();
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
-var db;
+var id;
+
 
 mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){
@@ -11,12 +12,10 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
+    db.collection('teacher').find({}).toArray((err, teacher) =>{id = teacher.length});
   }
 });
 
-
-
-id = 0;
 
 //-------------------------------GET--------------------------------
 
@@ -48,14 +47,16 @@ app.get('/:id', function (req, res) {
 //------------------------POST------------------------------
 
 app.post('/', function (req, res) {
-  let usuario = req.body;
+  let usuario = {};
+  usuario.name = req.body.name;
+  usuario.lastname = req.body.lastname;
   if(usuario.name && usuario.lastname){
     usuario['id'] = ++id;
     if(typeof(req.body.phd) == 'boolean'){
       usuarios.phd = req.body.phd;
     }
     usuario.status = 1;
-    db.collection('teacher').insert(usuario);
+    db.collection('teacher').insertOne(usuario);
     res.status(201).send("Usuário cadastrado com sucesso");
   }else {
     res.status(403).send("Campo invalido");
@@ -66,7 +67,7 @@ app.post('/', function (req, res) {
 
 app.put('/:id', function (req, res) {
   if(req.body.name && req.body.lastname){ //Business rule (name and lastname must have a value
-  let usuarios = req.body;
+  let usuarios = [];
   //Fill teachers data
   usuarios.name = req.body.name;
   usuarios.lastname = req.body.lastname
@@ -82,13 +83,24 @@ app.put('/:id', function (req, res) {
   usuarios.status = 1;
 
   console.log('2', usuarios);
-  db.collection('teacher').findOneAndReplace({"id": id, "status": 1},
-    {"id": usuarios.id, "name": usuarios.name, "lastname": usuarios.lastname, "status": usuarios.status, "phd": usuarios.phd}, 
+  db.collection('teacher').findOneAndReplace(
+    {"id": id, "status": 1},
+    {...usuarios},
     function (err, results){ 
       if(results == null) {
         res.status(403).send("Não foi possivel completar a atualização")
       }else{
-        res.send("Usuário modificado com sucesso");
+        console.log('chegou aki');
+        db.collection('course').updateMany(
+          { "teacher.id": usuarios.id }, 
+          { "$set": { "teacher.$": usuarios } }
+        ), function(err_course, results){
+          
+          if(!err_course)
+            res.send("Usuário modificado com sucesso");
+          else
+            res.send('Erro na modificação')
+        }
       }
     });
     }

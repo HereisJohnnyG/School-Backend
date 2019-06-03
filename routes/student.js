@@ -3,7 +3,7 @@ const app = express.Router();
 const _curso = require('./course.js');
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
-var db;
+var db, id;
 
 mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){
@@ -12,17 +12,15 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
+    db.collection('student').find({}).toArray((err, student) =>{id = student.length});
   }
 });
 
 
-
-var id = 0;
-
-var students = [];
 //-------------------------------GET--------------------------------
 app.get('/', function (req, res) {
-  db.collection('student').find({}).toArray( (err, estudantes) => {
+  db.collection('student').find({status:1}, 
+    {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}}).toArray( (err, estudantes) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Student");
       send.status(500);
@@ -33,7 +31,8 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('student').find({"id": id}).toArray( (err, estudantes) => {
+  db.collection('student').find({"id": id, status:1}, 
+    {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}}).toArray( (err, estudantes) => {
     if(err){
       console.error("Ocorreu um erro ao conectar a collection Student");
       send.status(500);
@@ -50,16 +49,27 @@ app.get('/:id', function (req, res) {
 //-------------------------------POST--------------------------------
 
 app.post('/', function(req, res) {
-  let students = req.body;
-  if(students.name && students.lastname && students.age && students.course){
+  let students = {};
+  students.name = req.body.name;
+  students.lastname = req.body.lastname;
+  students.age = req.body.age;
+  students.course = [];
+  let student_temp = req.body.course;
+  
+  if(students.name && students.lastname && students.age && req.body.course){
+    console.log('-----------');
     students.status = 1;
     students.id = ++id;
     (async function() {
-      for (let i = 0; i < students.course.length; i++) {
-        let courses = await _getOneCourse(students.course[i]);
-        students.course[i] = courses;
+      for (let i = 0; i < student_temp.length; i++) {
+        let courses = await _getOneCourse(student_temp[i]);
+        if(courses != null){
+          console.log(courses);
+          students.course.push(courses);
+        }
+        //students.course[i] = courses;
       }
-      if(students.course.length != 0){
+      if(students.course > 0){
           db.collection('student').insertOne(students, (err, result) => {
           if (err) {
             console.error("Erro ao cadastrar um novo estudante", err);
@@ -68,16 +78,15 @@ app.post('/', function(req, res) {
             res.status(201).send("Estudante Cadastrado com Sucesso.");
           }
         });
-      }else{
-        res.status(500).send("Erro ao Criar Um Novo estudante");
-    }
+      }else res.status(500).send("Erro ao criar Um novo estudante, curso invalido");
+      
     })();
-  }
+  }else{res.status(500).send("Erro ao Criar Um Novo estudante");}
 });
 
 const _getOneCourse = function(id) {
   return new Promise((resolve, reject) => {
-      db.collection('course').findOne({ "id" : id}, (err, course) => {
+      db.collection('course').findOne({ "id" : id, "status": 1}, (err, course) => {
       if (err)
         return reject(err);
       else
@@ -90,8 +99,15 @@ const _getOneCourse = function(id) {
 
 app.put('/:id', function (req, res) {
 
-  let students = req.body;
-  if(students.name && students.lastname && students.age && students.course){
+  let students = {};
+  students.name = req.body.name;
+  students.lastname = req.body.lastname;
+  students.age = req.body.age;
+  students.course = [];
+  let student_temp = req.body.course;
+
+
+  if(students.name && students.lastname && students.age && student_temp){
   let id = parseInt(req.params.id);
   students.id = parseInt(req.params.id);
   let ide = parseInt(req.params.id);
@@ -99,22 +115,26 @@ app.put('/:id', function (req, res) {
     res.status(400).send("Solicitação não autorizada");
   }else{
     (async function() {
-      if(students.course.length > 0){
-      for (let i = 0; i < students.course.length; i++) {
-        let courses = await _getOneCourse(students.course[i]);
-        students.course[i] = courses;
-      }
-      db.collection('student').updateOne({"id": ide}, { $set: students }, (err, result) => {
-        if (err) {
-          console.error("Erro ao editar Curso", err);
-          res.status(500).send("Erro ao editar Curso");
-        } else {
-          res.status(201).send("Curso editado com Sucesso.");
+      for (let i = 0; i < student_temp.length; i++) {
+        let courses = await _getOneCourse(student_temp[i]);
+        if(courses != null){
+          console.log(courses);
+          students.course.push(courses);
         }
-      });
-    }else{
-      res.status(400).send("Necessário cadastrar um curso para o aluno");
-    }
+        //students.course[i] = courses;
+      }
+      if(students.course.length > 0){
+        db.collection('student').updateOne({"id": ide, "status": 1}, { $set: students }, (err, result) => {
+          if (err) {
+            console.error("Erro ao editar Curso", err);
+            res.status(500).send("Erro ao editar Curso");
+          } else {
+            res.status(201).send("Curso editado com Sucesso.");
+          }
+        });
+      }else{
+        res.status(400).send("Necessário cadastrar um curso para o aluno");
+      }
     })();
   }
 }
@@ -144,23 +164,17 @@ app.delete('/', function (req, res) {
 app.delete('/:id', function (req, res) {
   let id = parseInt(req.params.id);
 
-  db.collection('student').remove( {"id": id}, true, function(err, info){
+  db.collection('student').findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}}, function (err, results){ 
     if(err){
-      console.error("Ocorreu um erro ao deletar os professores da coleção");
+      console.error("Ocorreu um erro ao deletar os usuários da coleção");
       res.status(500);
-    }else{
-      let n_removed = info.result.n;
-      if(n_removed > 0){
-        res.status(200)
-        res.send("Todos os professores foram removidos com sucesso");
-        console.log("INF: Todos os professores" + n_removed + "foram removidos");
-      }else{
-        console.log("Nenhum professores foi removido");
-        res.status(204).send("Nenhum professores foi removido");
-      } 
-    } 
+    }else
+    if(results.value == null) {
+      res.status(204).send("Não foi possivel encontrar o usuário")
+    }else res.send("Usuário excluido com sucesso");
   });
-})
+
+});
 
 
 
