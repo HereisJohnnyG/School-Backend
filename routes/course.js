@@ -34,15 +34,17 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('course').find({"id": id, "status": 1, 'teacher.status': 1}, {projection: {'_id': 0, 'status':0, 'teacher.status': 0}}).toArray( (err, courses) => {
-    if(err){
-      console.error("Ocorreu um erro ao conectar a collection Course");
-      send.status(500);
-    }else{
-      if(courses == []){
-        res.status(404).send("Curso não encontrado");
-      }else res.send(courses);
-    } 
+  db.collection('course').find({"id": id, "status": 1, 'teacher.status': 1}, 
+    {projection: {'_id': 0, 'status':0, 'teacher.status': 0}}).
+    toArray( (err, courses) => {
+      if(err){
+        console.error("Ocorreu um erro ao conectar a collection Course");
+        send.status(500);
+      }else{
+        if(courses == []){
+          res.status(404).send("Curso não encontrado");
+        }else res.send(courses);
+      } 
     
   });
 });
@@ -138,6 +140,7 @@ app.put('/:id', function (req, res) {
 
 //-------------------------------DELETE--------------------------------
 app.delete('/', function (req, res) {
+  // res.status(204).send("Função desativada");
   db.collection('course').remove( {}, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");

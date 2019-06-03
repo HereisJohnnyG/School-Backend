@@ -46,7 +46,7 @@ app.get('/:id', function (req, res) {
 //-------------------------------POST--------------------------------
 
 app.post('/', function (req, res) {
-  
+
   let usuario = {};
   usuario.name = req.body.name;
   usuario.lastname = req.body.lastname;
@@ -119,18 +119,23 @@ app.delete('/:id', function (req, res) {
 
 app.put('/:id', function (req, res) {
   
-    let usuarios = [];
+    let usuarios = {};
     usuarios.name = req.body.name;
     usuarios.lastname = req.body.lastname;
     usuarios.profile = req.body.profile;
     if(req.body.name && req.body.lastname && req.body.profile){
       let id = parseInt(req.params.id);
       usuarios.id = id;
-      db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
-        console.log('---------_>',results);
-        if(results == null) {
+      db.collection('user').updateOne({"id": id, "status": 1}, {$set: usuarios}, function (err, results){ 
+        if(err){
+          res.status(403).send("Erro na atualização");
+        }else if(results == null) {
           res.status(403).send("Não foi possivel completar a atualização")
-        }else res.send("Usuário modificado com sucesso");
+        }else 
+          console.log(results.matchedCount);
+          if(results.matchedCount > 0){
+            res.send("Usuário modificado com sucesso");
+          }else res.send("Usuário não encontrado");
       });
     }else res.status(403).send("Campo invalido");
 });

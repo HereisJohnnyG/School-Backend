@@ -91,15 +91,14 @@ app.put('/:id', function (req, res) {
         res.status(403).send("Não foi possivel completar a atualização")
       }else{
         console.log('chegou aki');
-        db.collection('course').updateMany(
+        db.collection('course').updateOne(
           { "teacher.id": usuarios.id }, 
-          { "$set": { "teacher.$": usuarios } }
-        ), function(err_course, results){
-          
-          if(!err_course)
-            res.send("Usuário modificado com sucesso");
-          else
-            res.send('Erro na modificação')
+          { "$set": { "teacher.$": usuarios } }), 
+          function(err_course, results){          
+            if(!err_course)
+              res.send("Usuário modificado com sucesso");
+            else
+              res.send('Erro na modificação')
         }
       }
     });
@@ -110,7 +109,7 @@ app.put('/:id', function (req, res) {
 
 //------------------------DELETE------------------------------
 app.delete('/', function (req, res) {
-
+  // res.status(204).send("Função desativada");
   db.collection('teacher').remove( {}, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");
@@ -136,10 +135,22 @@ app.delete('/:id', function (req, res) {
       if(err){
         console.error("Ocorreu um erro ao deletar os usuários da coleção");
         res.status(500);
-      }else
-      if(results.value == null) {
+      }else if(results.value == null) {
         res.status(204).send("Não foi possivel encontrar o usuário")
-      }else res.send("Usuário excluido com sucesso");
+      }else{
+        // db.collection('course').findOneAndUpdate({}, 
+        // {$pull: {teacher: {"id": id}}},
+        // function(err, res){
+        //   if(err){
+        //     res.status(404).send("Nenhum professores foi removido");
+        //   }
+        //   else{
+        //     res.send("Usuário excluido com sucesso");
+        //   }
+        // });
+        res.send("Usuário excluido com sucesso");
+      }
+    
     });
 });
   /*db.collection('teacher').remove( {"id": id}, true, function(err, info){

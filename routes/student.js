@@ -118,7 +118,6 @@ app.put('/:id', function (req, res) {
       for (let i = 0; i < student_temp.length; i++) {
         let courses = await _getOneCourse(student_temp[i]);
         if(courses != null){
-          console.log(courses);
           students.course.push(courses);
         }
         //students.course[i] = courses;
@@ -129,7 +128,8 @@ app.put('/:id', function (req, res) {
             console.error("Erro ao editar Curso", err);
             res.status(500).send("Erro ao editar Curso");
           } else {
-            res.status(201).send("Curso editado com Sucesso.");
+            if(result.matchedCount > 0) res.status(201).send("Curso editado com Sucesso.");
+            else res.status(404).send("Estudante não encontrado");
           }
         });
       }else{
@@ -144,6 +144,7 @@ app.put('/:id', function (req, res) {
 
 
 app.delete('/', function (req, res) {
+  // res.status(204).send("Função desativada");
   db.collection('student').remove( {}, function(err, info){
     if(err){
       console.error("Ocorreu um erro ao deletar os usuários da coleção");
