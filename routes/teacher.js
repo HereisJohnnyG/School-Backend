@@ -137,6 +137,9 @@ app.put('/:id', function (req, res) {
 //------------------------DELETE------------------------------
 app.delete('/', function (req, res) {
    res.status(204).send("Função desativada");
+
+
+  // -------------------------OLD IMPLEMENTATION--------------------------
   // db.collection('teacher').remove( {}, function(err, info){
   //   if(err){
   //     console.error("Ocorreu um erro ao deletar os usuários da coleção");

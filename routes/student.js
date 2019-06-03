@@ -75,10 +75,10 @@ app.post('/', function(req, res) {
             console.error("Erro ao cadastrar um novo estudante", err);
             res.status(500).send("Erro ao criar Um novo estudante");
           } else {
-            res.status(201).send("Estudante Cadastrado com Sucesso.");
+            res.status(200).send("Estudante Cadastrado com Sucesso.");
           }
         });
-      }else res.status(500).send("Erro ao criar Um novo estudante, curso invalido");
+      }else res.status(201).send("Erro ao criar Um novo estudante, curso invalido");
       
     })();
   }else{res.status(500).send("Erro ao Criar Um Novo estudante");}

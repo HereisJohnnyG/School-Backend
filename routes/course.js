@@ -132,7 +132,7 @@ app.put('/:id', function (req, res) {
         db.collection('course').updateOne({"id": ide}, { $set: courses }, (err, result) => {
           if (err) {
             console.error("Erro ao Criar Um Novo Curso", err);
-            res.status(500).send("Erro ao Criar Um Novo Curso");
+            res.status(201).send("Erro ao Criar Um Novo Curso");
           } else {
             console.log('-------------------',courses);
             db.collection('student').updateMany(
