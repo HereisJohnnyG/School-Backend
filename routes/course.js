@@ -36,7 +36,7 @@ app.get('/', function (req, res) {
 
 app.get('/:id', function (req, res) {
   let id = parseInt(req.params.id);
-  db.collection('course').find({"id": id, "status": 1, 'teacher.status': 1}, 
+  db.collection('course').find({"id": id, "status": 1}, 
     {projection: {'_id': 0, 'status':0, 'teacher.status': 0}}).
     toArray( (err, courses) => {
       if(err){
@@ -109,8 +109,10 @@ function search_teacher(id) {
 app.put('/:id', function (req, res) {
   courses = {};
   courses.name = req.body.name;
-  courses.teacher = req.body.teacher;
+  courses.teacher = [];
   courses.city = req.body.city;
+  teacher_var = req.body.teacher
+
   console.log(courses.name, courses.city)  ;
   if(courses.name || courses.city){
 
@@ -121,8 +123,8 @@ app.put('/:id', function (req, res) {
       res.status(400).send("Solicitação não autorizada");
     }else{
       (async function() {
-        for (let i = 0; i < courses.teacher.length; i++) {
-          let teachers = await search_teacher(courses.teacher[i]);
+        for (let i = 0; i < teacher_var.length; i++) {
+          let teachers = await search_teacher(teacher_var[i]);
           if(teachers != null){
             courses.teacher.push(teachers);
           }
@@ -132,6 +134,7 @@ app.put('/:id', function (req, res) {
             console.error("Erro ao Criar Um Novo Curso", err);
             res.status(500).send("Erro ao Criar Um Novo Curso");
           } else {
+            console.log('-------------------',courses);
             db.collection('student').updateMany(
               { "course.id": courses.id }, 
               { $set: { "course.$": courses } }, 
@@ -139,7 +142,7 @@ app.put('/:id', function (req, res) {
                 if(err_course){
                   res.send("Erro na inserção do curso");
                 }          
-                else if(results.matchedCount > 0){
+                else if(results.matchedCount >= 0){
                   res.send("curso modificado com sucesso");
                 }
                 else{
@@ -194,7 +197,13 @@ app.delete('/:id', function (req, res) {
         }else
         if(info.value == null) {
           res.status(204).send("Não foi possivel encontrar o curso")
-        }else res.send("Usuário excluido com sucesso");
+        }else{
+          
+          db.collection('student').updateMany({}, 
+            {$pull: {course: {"id": id}}});
+          
+          res.send("Usuário excluido com sucesso");
+        }
       } 
   });
 })

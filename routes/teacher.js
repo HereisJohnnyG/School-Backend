@@ -90,8 +90,8 @@ app.put('/:id', function (req, res) {
       if(results == null) {
         res.status(403).send("Não foi possivel completar a atualização")
       }else{
-        console.log('chegou aki');
-        console.log('2', usuarios);
+        //console.log('chegou aki');
+        //console.log('2', usuarios);
         db.collection('course').updateMany(
           { "teacher.id": usuarios.id }, 
           { $set: { "teacher.$": usuarios } }, 
@@ -100,7 +100,28 @@ app.put('/:id', function (req, res) {
               res.send("Erro na inserção do professor");
             }          
             else if(results){
-              res.send("Usuário modificado com sucesso");
+              db.collection('course').find({"teacher.id": id, status: 1}).toArray( (err, course_temo) => {
+                course_temo.forEach((e) => {
+                  db.collection("student").findOneAndReplace(
+                    {"status": 1, "course.id": e.id},
+                    {$set: {"course": e}})
+                  })
+                })
+              // db.collection('student').find({"course.teacher.id": id, status: 1}).toArray( (err, course_temo) => {
+              //   if(!err){
+              //     course_temo.forEach((e) => {
+              //       let temporario = e;
+              //       temporario.course.teacher.id[1] =
+              //       db.collection('student').findOneAndUpdate({})
+              //     });
+              //   }
+              // });
+                
+
+              // db.collection('student').updateMany(      //ERROR
+              //   { "course.teacher.id": usuarios.id }, 
+              //   { $set: { "course.teacher.$": usuarios } })
+               res.send("Usuário modificado com sucesso");
             }
             else{
               res.send('Erro na modificação');
@@ -144,8 +165,10 @@ app.delete('/:id', function (req, res) {
       }else if(results.value == null) {
         res.status(204).send("Não foi possivel encontrar o usuário")
       }else{
-        // db.collection('course').findOneAndUpdate({}, 
-        // {$pull: {teacher: {"id": id}}},
+        db.collection('course').updateMany({}, 
+         {$pull: {teacher: {"id": id}}});
+        db.collection('student').updateMany({}, 
+          {$pull: {'course.teacher': {"id": id}}});
         // function(err, res){
         //   if(err){
         //     res.status(404).send("Nenhum professores foi removido");
@@ -184,6 +207,18 @@ app.delete('/:id', function (req, res) {
     let result = teacher.filter ( (s) => {return (s.id == ide)} );
     return(result);
 }*/
+
+const search_course = function(id) {
+  return new Promise((resolve, reject) => {
+      db.collection('student').find({ "id" : id, "status": 1}, (err, course) => {
+      if (err)
+        return reject(err);
+      else
+      console.log(course);
+        return resolve(course);
+    });
+  });
+};
 
 
 //------------------------EXPORT------------------------------
