@@ -34,18 +34,18 @@ exports.post = (req, res) => {
     usuario.name = req.body.name;
     usuario.lastname = req.body.lastname;
     if(usuario.name && usuario.lastname){
-        usuario['id'] = modelTeacher.getId();
+        usuario.id = modelTeacher.getId();
         if(typeof(req.body.phd) == 'boolean'){
-        usuarios.phd = req.body.phd;
+        usuario.phd = req.body.phd;
         }
         usuario.status = 1;
         modelTeacher.insert(usuario)
             .then(e => {
                 res.status(201).send("Usuário cadastrado com sucesso");
             }).catch(e => {
-                res.status(403).send("Campo invalido");
+                res.status(401).send("Erro ao cadastrar usuário");
             });
-    }
+    }else res.status(401).send("Campo Invalido")
 }
 
 exports.edit = (req, res) => {
@@ -67,17 +67,19 @@ exports.edit = (req, res) => {
 
     where = {"id": id, "status": 1};
     
-    modelTeacher.troca(where, {...usuarios})
+    modelTeacher.troca(where, usuarios)
         .then(
-            results => { 
-                if(results == null) {
+            results => {
+                if(results.value == null) {
                     res.status(403).send("Não foi possivel completar a atualização")
                 }
                 else{ 
+                    console.log(1);
                     modelCourse.updateMany(
                         { "teacher.id": usuarios.id }, 
-                        { $set: { "teacher.$": usuarios } }).then(results => {
+                        { $set: {"teacher.$": usuarios}}).then(results => {
                           if(results){
+                            console.log(2);
                             modelCourse.get({"teacher.id": id, status: 1}, {}).then(course_temo => {
                               course_temo.forEach((e) => {
                                 modelStudent.replace(
@@ -96,7 +98,7 @@ exports.edit = (req, res) => {
 
             })
             .catch(e => res.status(403).send("Não foi possivel completar a atualização"));
-    }
+    }else res.status(401).send("Campo Invalido")
 } // error
 
 exports.deleta = (req, res) => {
@@ -106,8 +108,14 @@ exports.deleta = (req, res) => {
          if (results.value == null) {
              res.status(204).send("Não foi possivel encontrar o usuário")
          }else{
-            modelCourse.updateMany({}, {$pull: {teacher: {"id": id}}});
-            modelStudent.updateMany({}, {$pull: {'course.teacher': {"id": id}}});
+            modelCourse.updateMany({}, {$pull: {"teacher": {"id": id}}}).then(result => {
+            modelCourse.get({"status": 1}).then(course_temo => {
+                course_temo.forEach((e) => {
+                  modelStudent.replace(
+                    {"status": 1, "course.id": e.id},
+                    {$set: {"course": e}})
+                  })
+            })})
             res.send("O professor foi removido com sucesso")
          }
      })

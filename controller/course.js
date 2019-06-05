@@ -49,7 +49,7 @@ exports.post = (req, res) => {
       course.name = req.body.name;
       course.city = req.body.city
       course.period = parseInt(course.period) || 8;
-      course.id = modelStudent.getId();
+      course.id = modelCourse.getId();
   
       let curso_var = req.body.teacher;
 
@@ -63,7 +63,6 @@ exports.post = (req, res) => {
             }
         }
         modelCourse.insertCourse(course).then(result => {
-            console.log('result',result);
             if(course.teacher.length < curso_var.length){
               res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
             }else res.status(201).send("Curso Cadastrado com Sucesso.");
@@ -83,7 +82,7 @@ exports.edit = (req, res) => {
     courses.city = req.body.city;
     teacher_var = req.body.teacher
     courses.period = parseInt(courses.period) || 8;
-    if(courses.name || courses.city){
+    if(courses.name && courses.city){
       courses.id = parseInt(req.params.id);
       courses.status = 1;
       let ide = parseInt(req.params.id);
@@ -101,13 +100,15 @@ exports.edit = (req, res) => {
           // collun = { $set: {...courses} };
           //console.log(where, collun);
           modelCourse.updateCourse(where, courses).then(result => {
-            console.log('1 -  ',courses);
-            modelStudent.updateMany({ "course.id": ide }, { $set: { "course.$": courses }}).then(
+            if(!result.value){
+                res.send("Não foi encontrado curso para ser atualizado");
+            }else{
+            modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
                 results => {
                     
                     res.send("Curso modificado com sucesso");
               })
-          }).catch(err => {
+          }}).catch(err => {
             console.error("Erro ao Criar Um Novo Curso", err);
             res.status(201).send("Erro ao Criar Um Novo Curso");
           })
@@ -120,7 +121,7 @@ exports.delete = (req, res) => {
     
     modelCourse.deleta(id).then(info => {           
         modelStudent.updateMany({ "course.id": id }, { $set: { "status": 0 }});
-            res.send("Usuário excluido com sucesso");
+            res.send("Curso excluido com sucesso");
     }).catch(err => {
         console.error("Ocorreu um erro ao deletar o curso da coleção");
         res.status(500);

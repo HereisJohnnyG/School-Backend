@@ -71,9 +71,9 @@ exports.delete = (req, res) => {
     modelStudent.delete(where, set).then(results => { 
       if(results.value == null) {
         res.status(204).send("Não foi possivel encontrar o usuário")
-      }else res.send("Usuário excluido com sucesso");
+      }else res.send("Estudante excluido com sucesso");
     }).catch(e => {
-        console.error("Ocorreu um erro ao deletar os usuários da coleção");
+        console.error("Ocorreu um erro ao deletar os estudante da coleção");
         res.status(500);
     })
 }

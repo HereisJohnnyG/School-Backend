@@ -29,7 +29,7 @@ exports.insert = (document) => {
 }
 
 exports.troca = (where, document) => {
-    return db.collection('teacher').updateOne(where, {$set: document});
+    return db.collection('teacher').findOneAndReplace(where, document);
 }
 
 exports.deleta = (where) => {

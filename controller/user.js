@@ -34,7 +34,7 @@ exports.post = (req, res) => {
     usuario.profile = req.body.profile;
   
     if(usuario.name && usuario.lastname && usuario.profile){
-        usuario['id'] = modelUser.getId();
+        usuario.id = modelUser.getId();
         usuario.status = 1;
         modelUser.insert(usuario).then(
             user => {
