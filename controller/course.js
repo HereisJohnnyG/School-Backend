@@ -44,7 +44,7 @@ exports.getOne = (req, res) => {
 
 exports.post = (req, res) => {
     course = {};
-    if(req.body.name && req.body.city){
+    if(req.body.name && req.body.city && (req.body.teacher.length >= 2)){
       course.status = 1;
       course.name = req.body.name;
       course.city = req.body.city

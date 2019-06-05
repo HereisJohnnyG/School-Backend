@@ -39,7 +39,7 @@ exports.post = (req, res) => {
     students.status = 1;
     students.id = modelStudent.getId();
 
-    if(students.name && students.lastname && students.age && req.body.course.length == 1){
+    if(students.name && students.lastname && students.age && req.body.course.length == 1 && students.age > 17){
         
         (async function() {
             for (let i = 0; i < student_temp.length; i++) {

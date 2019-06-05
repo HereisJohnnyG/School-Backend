@@ -16,10 +16,6 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
 
 
 
-
-
-
-
 const baseAPI = "/api/v1";
 
 
