@@ -1,0 +1,34 @@
+{
+  "name": "trainee27-05",
+  "version": "1.0.0",
+  "description": "Trainee Program",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.2.6"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HereisJohnnyG/traineeprominas-jjmg-sandbox.git"
+  },
+  "keywords": [
+    "node",
+    "mocha",
+    "crud"
+  ],
+  "author": "Jefferson Gandra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HereisJohnnyG/traineeprominas-jjmg-sandbox/issues"
+  },
+  "homepage": "https://github.com/HereisJohnnyG/traineeprominas-jjmg-sandbox#readme"
+}
