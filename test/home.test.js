@@ -1,14 +1,42 @@
-const assert = require('assert');
-const expect = require('chai').expect
-const request = require('supertest');
-//const app = require('../app')
+//During the test the env variable is set to test
+process.env.NODE_ENV = 'test';
+
+let mongodb = require("mongodb");
 
 
+let student = require('../routes/student');
+let course = require('../routes/course');
+let teacher = require('../routes/teacher');
+let user = require('../routes/user');
 
-describe('Array', function() {
-  describe('#indexOf()', function() {
-    it('should return -1 when the value is not present', function() {
-      assert.equal([1, 2, 3].indexOf(4), -1);
-    });
+
+//Require the dev-dependencies
+let chai = require('chai');
+let chaiHttp = require('chai-http');
+let server = require('../index');
+let should = chai.should();
+
+
+chai.use(chaiHttp);
+//Our parent block
+describe('Books', () => {
+    // beforeEach((done) => { //Before each test we empty the database
+    //     student.remove({}, (err) => { 
+    //        done();           
+    //     });        
+    // });
+/*
+  * Test the /GET route
+  */
+  describe('/GET user', () => {
+      it('it should GET all the books', (done) => {
+        chai.request(server)
+            .get('/user')
+            .end((err, res) => {
+                  res.should.have.status(200);
+              done();
+            });
+      });
   });
+
 });
