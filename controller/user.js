@@ -33,7 +33,7 @@ exports.post = (req, res) => {
     usuario.lastname = req.body.lastname;
     usuario.profile = req.body.profile;
   
-    if(usuario.name && usuario.lastname && usuario.profile){
+    if(usuario.name && usuario.lastname && (toUpperCase(usuario.profile) == "ADMIN" || toUpperCase(usuario.profile) == "USER") ){
         usuario.id = modelUser.getId();
         usuario.status = 1;
         modelUser.insert(usuario).then(
