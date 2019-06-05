@@ -48,7 +48,7 @@ exports.post = (req, res) => {
       course.status = 1;
       course.name = req.body.name;
       course.city = req.body.city
-      course.period = parseInt(course.period) || 8;
+      course.period = parseInt(req.body.period) || 8;
       course.id = modelCourse.getId();
   
       let curso_var = req.body.teacher;
@@ -81,7 +81,7 @@ exports.edit = (req, res) => {
     courses.teacher = [];
     courses.city = req.body.city;
     teacher_var = req.body.teacher
-    courses.period = parseInt(courses.period) || 8;
+    courses.period = parseInt(req.body.period) || 8;
     if(courses.name && courses.city){
       courses.id = parseInt(req.params.id);
       courses.status = 1;
@@ -99,11 +99,13 @@ exports.edit = (req, res) => {
           where = {"id": ide};
           // collun = { $set: {...courses} };
           //console.log(where, collun);
+          console.log(courses);
           modelCourse.updateCourse(where, courses).then(result => {
             if(!result.value){
                 res.send("Não foi encontrado curso para ser atualizado");
             }else{
-            modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
+                console.log(ide, courses);
+                modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
                 results => {
                     
                     res.send("Curso modificado com sucesso");
@@ -119,9 +121,11 @@ exports.edit = (req, res) => {
 exports.delete = (req, res) => {
     let id = parseInt(req.params.id);
     
-    modelCourse.deleta(id).then(info => {           
+    modelCourse.deleta(id).then(info => {
+    if(info.value){        
         modelStudent.updateMany({ "course.id": id }, { $set: { "status": 0 }});
             res.send("Curso excluido com sucesso");
+    }else res.send("Não foi possivel excluir o curso");
     }).catch(err => {
         console.error("Ocorreu um erro ao deletar o curso da coleção");
         res.status(500);

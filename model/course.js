@@ -36,7 +36,7 @@ exports.insertCourse = (course) => {
 
 exports.updateCourse = (ide, collun) => {
 
-  return db.collection('course').findOneAndUpdate(ide, { $set: { collun } });
+  return db.collection('course').findOneAndUpdate(ide, { $set: collun } );
   // return db.collection('course').findOneAndUpdate(ide, collun);
 }
 
