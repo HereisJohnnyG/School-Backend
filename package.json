@@ -11,7 +11,9 @@
     "mongodb": "^3.2.6"
   },
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "supertest": "^4.0.2"
   },
   "scripts": {
     "test": "mocha"
