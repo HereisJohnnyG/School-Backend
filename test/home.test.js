@@ -1,42 +1,30 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
-
-let mongodb = require("mongodb");
-
-
-let student = require('../routes/student');
-let course = require('../routes/course');
-let teacher = require('../routes/teacher');
-let user = require('../routes/user');
-
-
-//Require the dev-dependencies
 let chai = require('chai');
+var assert = require('chai').assert;
 let chaiHttp = require('chai-http');
-let server = require('../index');
+let user = require('../routes/user');
 let should = chai.should();
 
 
 chai.use(chaiHttp);
 //Our parent block
-describe('Books', () => {
-    // beforeEach((done) => { //Before each test we empty the database
-    //     student.remove({}, (err) => { 
-    //        done();           
-    //     });        
-    // });
+describe('Users', () => {
+
 /*
   * Test the /GET route
   */
-  describe('/GET user', () => {
-      it('it should GET all the books', (done) => {
-        chai.request(server)
-            .get('/user')
-            .end((err, res) => {
-                  res.should.have.status(200);
-              done();
+    it('Create User Testing', (done) => {
+        let user = {
+            'name': 'Jeff',
+            'lastname': 'Gandra',
+            'profile': 'admin',
+            'status': 1
+        }
+        chai.request(process.env.NODE_ENV)
+            .post('/user')
+            .send(user)
+            .end((res) => {
+                chai.expect(res.status).equal(200);
+                done();
             });
-      });
-  });
-
+        });
 });
