@@ -85,10 +85,10 @@ exports.edit = (req, res) => {
     students.lastname = req.body.lastname;
     students.age = req.body.age;
     students.course = [];
-    let student_temp = req.body.course;
+    let student_temp = []; 
+    student_temp.push(req.body.course);
 
-
-    if(students.name && students.lastname && students.age && student_temp.length == 1){
+    if(students.name && students.lastname && students.age >= 17 && student_temp.length == 1){
     let id = parseInt(req.params.id);
     students.id = parseInt(req.params.id);
     let ide = parseInt(req.params.id);
@@ -105,15 +105,14 @@ exports.edit = (req, res) => {
                 students.course.push(courses);
             }
         }
-        //console.log(students);
         if(students.course.length > 0){
             let where = {"id": ide, "status": 1};
             //let collun = { $set: {students} };
             //console.log(ide);
             modelStudent.updateStudent(where,students)
             .then(result => {
-                if(result) res.status(201).send("Estudante editado com Sucesso.");
-                else res.status(401).send("Estudante não encontrado");
+                if(result){ res.status(200).send("Estudante editado com Sucesso.");}
+                else{  res.status(401).send("Estudante não encontrado");}
             })
         }else{
             res.status(401).send("Necessário cadastrar um curso válido para o aluno");

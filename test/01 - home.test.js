@@ -6,14 +6,10 @@ let server = require('../index');
 
 describe('Unit testing the /api/v1 route', function() {
 
-    this.timeout(12000);
+    this.timeout(10000);
   
     before(done => {
-  
-      setTimeout(() => {
-        done();
-      }, 10000);
-  
+      setTimeout(() => { done() }, 10000);
     });
   
     it('GET /api/v1 should return OK status', function() {

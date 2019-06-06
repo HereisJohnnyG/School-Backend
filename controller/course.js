@@ -84,7 +84,8 @@ exports.edit = (req, res) => {
     courses.name = req.body.name;
     courses.teacher = [];
     courses.city = req.body.city;
-    teacher_var = req.body.teacher
+    let teacher_var = [];
+    teacher_var = req.body.teacher;
     courses.period = parseInt(req.body.period) || 8;
     if(courses.name && courses.city){
       courses.id = parseInt(req.params.id);
@@ -92,7 +93,6 @@ exports.edit = (req, res) => {
       let ide = parseInt(req.params.id);
       
         (async function() {
-            console.log("---------------------");
           for (let i = 0; i < teacher_var.length; i++) {
             int = teacher_var[i];
             let teachers = await modelTeacher.get_without_array({id: int, status: 1});
@@ -100,26 +100,31 @@ exports.edit = (req, res) => {
               courses.teacher.push(teachers);
             }
           }
-          where = {"id": ide};
-          // collun = { $set: {...courses} };
-          //console.log(where, collun);
-          console.log(courses);
-          modelCourse.updateCourse(where, courses).then(result => {
-            if(!result.value){
-                res.send("Não foi encontrado curso para ser atualizado");
-            }else{
-                console.log(ide, courses);
-                modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
-                results => {
-                    
-                    res.send("Curso modificado com sucesso");
-              })
-          }}).catch(err => {
-            console.error("Erro ao Criar Um Novo Curso", err);
-            res.status(201).send("Erro ao Criar Um Novo Curso");
-          })
-        })(); 
-     }else res.status(403).send("Os dados devem ser preenchidos");
+          
+          if(parseInt(courses.teacher.length) <= 1){
+            //console.log('000000000000');
+            res.status(401).send("Não foi possível registrar o aluno, somente 1 professor foi localizado");
+          }else{
+            where = {"id": ide};
+            modelCourse.updateCourse(where, courses).then(result => {
+                if(!result.value){
+                    res.status(404).send("Não foi encontrado curso para ser atualizado");
+                }else{
+                    res.status(200).send("Curso modificado com sucesso");
+                    modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
+                    results => {
+                        //console.log(course.teacher);
+                        
+                    })
+                }
+            }).catch(err => {
+                console.log(courses.teacher.length);
+                console.error("Erro ao modificar o curso", err);
+                res.status(401).send("Erro ao modificar o Curso");
+            })
+        }
+    })(); 
+     }else res.status(401).send("Os dados devem ser preenchidos");
 }
 
 exports.delete = (req, res) => {

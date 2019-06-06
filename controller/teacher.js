@@ -9,8 +9,7 @@ exports.getAll = (req, res) => {
         .then(teachers => {
             res.send(teachers);
         }).catch(err => {
-        console.log(err);
-        console.error("Ocorreu um erro ao enviar os usuários");
+        console.error("Ocorreu um erro ao enviar os usuários", err);
         res.status(500).send('Ocorreu um erro');
     });
 }
@@ -23,8 +22,7 @@ exports.getOne = (req, res) => {
         .then(teachers => {
             res.send(teachers);
         }).catch(err => {
-        console.log(err);
-        console.error("Ocorreu um erro ao enviar os usuários");
+        console.error("Ocorreu um erro ao enviar os usuários", err);
         res.status(500).send('Ocorreu um erro');
     });
 }
@@ -49,7 +47,7 @@ exports.post = (req, res) => {
 }
 
 exports.edit = (req, res) => {
-    if(req.body.name && req.body.lastname){ //Business rule (name and lastname must have a value
+    if(req.body.name && req.body.lastname && (req.body.phd == true)){ //Business rule (name and lastname must have a value
     let usuarios = {};
     //Fill teachers data
     usuarios.name = req.body.name;
@@ -71,15 +69,13 @@ exports.edit = (req, res) => {
         .then(
             results => {
                 if(results.value == null) {
-                    res.status(403).send("Não foi possivel completar a atualização")
+                    res.status(401).send("Não foi possivel completar a atualização")
                 }
                 else{ 
-                    console.log(1);
                     modelCourse.updateMany(
                         { "teacher.id": usuarios.id }, 
                         { $set: {"teacher.$": usuarios}}).then(results => {
                           if(results){
-                            console.log(2);
                             modelCourse.get({"teacher.id": id, status: 1}, {}).then(course_temo => {
                               course_temo.forEach((e) => {
                                 modelStudent.replace(
@@ -97,7 +93,7 @@ exports.edit = (req, res) => {
                     }
 
             })
-            .catch(e => res.status(403).send("Não foi possivel completar a atualização"));
+            .catch(e => res.status(401).send("Não foi possivel completar a atualização"));
     }else res.status(401).send("Campo Invalido")
 } // error
 

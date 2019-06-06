@@ -61,7 +61,7 @@ exports.edit = (req, res) => {
         if(results == null) {
           res.status(401).send("Não foi possivel completar a atualização")
         }else 
-          console.log(results.matchedCount);
+          //console.log(results.matchedCount);
           if(results.matchedCount > 0){
             res.send("Usuário modificado com sucesso");
           }else res.send("Usuário não encontrado");
