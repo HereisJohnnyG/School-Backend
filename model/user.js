@@ -14,20 +14,107 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
 });
 
-exports.getId = () => {return ++id}
 
-exports.get = (where, collun) =>  {
+
+exports.insert_data = (req, res) => {
+    let where = {status:1};
+    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+    get(where,collun)
+        .then(users => {
+        res.send(users);
+        }).catch(err => {
+            console.log(err);
+            console.error("Ocorreu um erro ao conectar a collection User");
+            res.status(500).send('Ocorreu um erro');
+    });
+}
+
+
+exports.getOne = (req, res) => {
+  let id = parseInt(req.params.id);
+    let where = {"id": id, status:1};
+    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+    get(where,collun)
+        .then(users => {
+        res.send(users);
+        }).catch(err => {
+            console.log(err);
+            console.error("Ocorreu um erro ao conectar a collection User");
+            res.status(500).send('Ocorreu um erro');
+    });
+}
+
+
+exports.post = (req, res) => {
+  let usuario = {};
+  usuario.name = req.body.name;
+  usuario.lastname = req.body.lastname;
+  usuario.profile = req.body.profile;
+
+  if(usuario.name && usuario.lastname && (usuario.profile.toUpperCase() == "ADMIN" || usuario.profile.toUpperCase() == "GUESS") ){
+      usuario.id = getId();
+      usuario.status = 1;
+      insert(usuario).then(
+          user => {
+              res.status(201).send("Usuário cadastrado com sucesso");
+      }).catch(err => {
+          console.log(err);
+          console.error("Ocorreu um erro ao conectar a collection User");
+          res.status(500).send('Ocorreu um erro');
+      });
+  }else res.status(401).send("Campo invalido");
+}
+
+exports.edit = (req, res) => {
+  let usuarios = {};
+    usuarios.name = req.body.name;
+    usuarios.lastname = req.body.lastname;
+    usuarios.profile = req.body.profile;
+    if(req.body.name && req.body.lastname && (req.body.profile.toUpperCase() == "ADMIN" || req.body.profile.toUpperCase() == "GUESS")){
+      let id = parseInt(req.params.id);
+      usuarios.id = id;
+      troca(id, usuarios).then(results => { 
+        if(results == null) {
+          res.status(401).send("Não foi possivel completar a atualização")
+        }else 
+          //console.log(results.matchedCount);
+          if(results.matchedCount > 0){
+            res.send("Usuário modificado com sucesso");
+          }else res.send("Usuário não encontrado");
+      }).catch(err => {
+        res.status(401).send("Erro na atualização");
+      });
+    }else res.status(401).send("Campo invalido");
+}
+
+exports.delete = (req, res) => {
+  let id = parseInt(req.params.id);
+  //------------Alternate status to 1 for "delete" ---------------------//
+    deleta(id).then( results => {
+        if(results.value == null) {
+            res.status(204).send("Não foi possivel encontrar o usuário")
+        }
+        else res.send("Usuário excluido com sucesso");
+    }).catch(err => {
+        console.error("Ocorreu um erro ao deletar os usuários da coleção");
+        res.status(500);
+    })
+}
+
+getId = () => {return ++id}
+
+get = (where, collun) =>  {
     return db.collection('user').find(where, collun).toArray();
 }
 
-exports.insert = (document) => {
+insert = (document) => {
     return db.collection('user').insertOne(document);
 }
 
-exports.troca = (id, document) => {
+troca = (id, document) => {
     return db.collection('user').updateOne({"id": id, "status": 1}, {$set: document});
 }
-exports.deleta = (id) => {
+deleta = (id) => {
     return db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}});
 }
 
