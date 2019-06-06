@@ -33,7 +33,7 @@ exports.post = (req, res) => {
     usuario.lastname = req.body.lastname;
     usuario.profile = req.body.profile;
   
-    if(usuario.name && usuario.lastname && ((usuario.profile.toUpperCase()) == "ADMIN" || usuario.profile.toUpperCase() == "USER") ){
+    if(usuario.name && usuario.lastname && (usuario.profile.toUpperCase() == "ADMIN" || usuario.profile.toUpperCase() == "GUESS") ){
         usuario.id = modelUser.getId();
         usuario.status = 1;
         modelUser.insert(usuario).then(
@@ -44,7 +44,7 @@ exports.post = (req, res) => {
             console.error("Ocorreu um erro ao conectar a collection User");
             res.status(500).send('Ocorreu um erro');
         });
-    }else res.status(403).send("Campo invalido");
+    }else res.status(401).send("Campo invalido");
 }
 
 
@@ -54,7 +54,7 @@ exports.edit = (req, res) => {
     usuarios.name = req.body.name;
     usuarios.lastname = req.body.lastname;
     usuarios.profile = req.body.profile;
-    if(req.body.name && req.body.lastname && req.body.profile){
+    if(req.body.name && req.body.lastname && (req.body.profile.toUpperCase() == "ADMIN" || req.body.profile.toUpperCase() == "GUESS")){
       let id = parseInt(req.params.id);
       usuarios.id = id;
       modelUser.troca(id, usuarios).then(results => { 

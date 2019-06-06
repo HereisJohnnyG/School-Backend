@@ -33,7 +33,7 @@ exports.post = (req, res) => {
     let usuario = {};
     usuario.name = req.body.name;
     usuario.lastname = req.body.lastname;
-    if(usuario.name && usuario.lastname && req.body.phd){
+    if(usuario.name && usuario.lastname && (req.body.phd == true)){
         usuario.id = modelTeacher.getId();
         if(typeof(req.body.phd) == 'boolean'){
         usuario.phd = req.body.phd;

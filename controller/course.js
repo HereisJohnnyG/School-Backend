@@ -62,11 +62,15 @@ exports.post = (req, res) => {
                 course.teacher.push(teachers);
             }
         }
-        modelCourse.insertCourse(course).then(result => {
-            if(course.teacher.length < curso_var.length){
-              res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
-            }else res.status(201).send("Curso Cadastrado com Sucesso.");
-        });
+        if(course.teacher.length <= 1){
+            res.status(401).send("Não foi possível registrar o aluno, somente 1 professor foi localizado");
+        }else{
+            modelCourse.insertCourse(course).then(result => {
+                if(course.teacher.length < curso_var.length){
+                res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
+                }else res.status(201).send("Curso Cadastrado com Sucesso.");
+            });
+        }
       })().catch(e => {
         console.error("Erro ao Criar Um Novo Curso", e);
         res.status(500).send("Erro ao Criar Um Novo Curso");

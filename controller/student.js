@@ -35,32 +35,33 @@ exports.post = (req, res) => {
     students.lastname = req.body.lastname;
     students.age = req.body.age;
     students.course = [];
-    let student_temp = req.body.course;
+    let student_temp = [];
+    student_temp.push(req.body.course);
     students.status = 1;
     students.id = modelStudent.getId();
 
-    if(students.name && students.lastname && students.age && req.body.course.length == 1 && students.age > 17){
+    if(students.name && students.lastname && students.age && req.body.course && students.age >= 17){
         
         (async function() {
             for (let i = 0; i < student_temp.length; i++) {
                 let int = student_temp[i];
                 let courses = await modelCourse.get_without_array({id: int, status: 1});
-                console.log('------->',students.course);
                 if(courses){
                     
                     students.course.push(courses);
                 }
             }
             if(students.course.length > 0){
+                //console.log('------->',students.course);
                 modelStudent.insertStudent(students).then( result => {
-                  res.status(200).send("Estudante Cadastrado com Sucesso.");
+                  res.status(201).send("Estudante Cadastrado com Sucesso.");
                 }).catch(err => {
                     console.error("Erro ao cadastrar um novo estudante", err);
-                    res.status(500).send("Erro ao criar Um novo estudante");
+                    res.status(401).send("Erro ao criar Um novo estudante");
                 })
-            }else res.status(201).send("Erro ao criar Um novo estudante, curso invalido");
+            }else res.status(401).send("Erro ao criar Um novo estudante, curso invalido");
         })();
-        }else{res.status(500).send("Erro ao Criar Um Novo estudante, campo invalido");}
+        }else{res.status(401).send("Erro ao Criar Um Novo estudante, campo invalido");}
 }
 
 
@@ -87,7 +88,7 @@ exports.edit = (req, res) => {
     let student_temp = req.body.course;
 
 
-    if(students.name && students.lastname && students.age && req.body.course.length == 1){
+    if(students.name && students.lastname && students.age && student_temp.length == 1){
     let id = parseInt(req.params.id);
     students.id = parseInt(req.params.id);
     let ide = parseInt(req.params.id);
@@ -104,23 +105,23 @@ exports.edit = (req, res) => {
                 students.course.push(courses);
             }
         }
-        console.log(students);
+        //console.log(students);
         if(students.course.length > 0){
             let where = {"id": ide, "status": 1};
             //let collun = { $set: {students} };
-            console.log(ide);
+            //console.log(ide);
             modelStudent.updateStudent(where,students)
             .then(result => {
                 if(result) res.status(201).send("Estudante editado com Sucesso.");
-                else res.status(404).send("Estudante não encontrado");
+                else res.status(401).send("Estudante não encontrado");
             })
         }else{
-            res.status(400).send("Necessário cadastrar um curso válido para o aluno");
+            res.status(401).send("Necessário cadastrar um curso válido para o aluno");
         }
         })().catch(e => {
             console.error("erro ao editar Estudante:", e);
-            res.status(500).send("Ocorreu um erro ao editar Estudante:");
+            res.status(401).send("Ocorreu um erro ao editar Estudante:");
         });
   }
-}else res.status(403).send("Campo inválido");
+}else res.status(401).send("Campo inválido");
 }
