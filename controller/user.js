@@ -1,7 +1,7 @@
 const modelUser = require("../model/user");
 
 exports.getAll = (req, res) => {
-    return modelUser.insert_data(req, res);
+    return modelUser.getAll(req, res);
 }
 
 exports.getOne = (req, res) => {

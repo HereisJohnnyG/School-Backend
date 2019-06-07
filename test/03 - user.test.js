@@ -2,13 +2,14 @@ const chai = require('chai');
 const assert = chai.assert;
 const request = require('supertest');
 
+const db = require('../config')
 const app = require('../index');
 
 describe('Test Unit on /api/v1/user route', function() {
 
   describe('GET /api/v1/user', function() {
 
-    it('Do check if GET is responding', function() {
+    it('Do check if GET contains value', function() {
       return request(app)
         .get('/api/v1/user')
         .then(function(res) {
@@ -16,11 +17,27 @@ describe('Test Unit on /api/v1/user route', function() {
         });
     });
 
-    it('Do check if return an array', function() {
+    it('Do check if array is empty', function() {
       return request(app)
         .get('/api/v1/user')
         .then(function(res) {
-          assert.isArray(res.body);
+          assert.equal(res.status, 204)
+        });
+    });
+
+    it('Do check if GET contains a USER value', function() {
+      return request(app)
+        .get('/api/v1/user')
+        .then(function(res) {
+            assert.equal(res.status, 200)
+        });
+    });
+
+    it('Do check if no USER was found', function() {
+      return request(app)
+        .get('/api/v1/user')
+        .then(function(res) {
+          assert.equal(res.status, 204)
         });
     });
 
@@ -98,7 +115,7 @@ describe('Test Unit on /api/v1/user route', function() {
         });
     })
 
-    it("Don't delete a user", function() {
+    it("Don't delete because there is no user to delete", function() {
       return request(app)
         .delete('/api/v1/user/5')
         .then(function(res) {
@@ -107,7 +124,12 @@ describe('Test Unit on /api/v1/user route', function() {
     })
   })
 
-  
+  // try {
+  //   db.collection('user').deleteMany( {} );
+  // } catch (e) {
+  //   console.error(e);
+  // }
+ 
 
 
 });

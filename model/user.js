@@ -1,5 +1,6 @@
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
+const database = require('../schema')
 
 var db, id;
 
@@ -14,14 +15,16 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
 });
 
-
-
-exports.insert_data = (req, res) => {
+exports.getAll = (req, res) => {
     let where = {status:1};
     let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
     get(where,collun)
         .then(users => {
-        res.send(users);
+          if(users.length > 0){
+            res.send(users);
+          }else{
+            res.status(204);
+          }
         }).catch(err => {
             console.log(err);
             console.error("Ocorreu um erro ao conectar a collection User");
@@ -32,16 +35,20 @@ exports.insert_data = (req, res) => {
 
 exports.getOne = (req, res) => {
   let id = parseInt(req.params.id);
-    let where = {"id": id, status:1};
-    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
-    get(where,collun)
-        .then(users => {
-        res.send(users);
-        }).catch(err => {
-            console.log(err);
-            console.error("Ocorreu um erro ao conectar a collection User");
-            res.status(500).send('Ocorreu um erro');
-    });
+  let where = {"id": id, status:1};
+  let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+  get(where,collun)
+      .then(users => {
+        if(users.length > 0){
+          res.send(users);
+        }else{
+          res.status(204);
+        }
+      }).catch(err => {
+          console.log(err);
+          console.error("Ocorreu um erro ao conectar a collection User");
+          res.status(500).send('Ocorreu um erro');
+  });
 }
 
 
