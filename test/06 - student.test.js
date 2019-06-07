@@ -108,4 +108,23 @@ describe('Test Unit on /api/v1/student route', function() {
 
   });
 
+
+  describe('DELETE /api/v1/student/:id', function() {
+    it("Do delete a user", function() {
+      return request(app)
+        .delete('/api/v1/student/5')
+        .then(function(res) {
+            assert.equal(res.status, 200)
+        });
+    })
+
+    it("Don't delete a student", function() {
+      return request(app)
+        .delete('/api/v1/student/5')
+        .then(function(res) {
+            assert.equal(res.status, 204)
+        });
+    })
+  })
+
 });

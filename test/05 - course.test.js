@@ -86,15 +86,15 @@ describe('Test Unit on /api/v1/course route', function() {
   describe('DELETE /api/v1/course/:id', function() {
     it("Do delete a user", function() {
       return request(app)
-        .delete('/api/v1/user/5')
+        .delete('/api/v1/course/5')
         .then(function(res) {
             assert.equal(res.status, 200)
         });
     })
 
-    it("Don't delete a user", function() {
+    it("Don't delete a course", function() {
       return request(app)
-        .delete('/api/v1/user/5')
+        .delete('/api/v1/course/5')
         .then(function(res) {
             assert.equal(res.status, 204)
         });
