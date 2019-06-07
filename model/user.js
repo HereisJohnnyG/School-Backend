@@ -111,7 +111,7 @@ exports.delete = (req, res) => {
 getId = () => {return ++id}
 
 get = (where, collun) =>  {
-    return db.collection('user').find(where, collun).toArray();
+    return database.user.find(where, collun).exec();
 }
 
 insert = (document) => {

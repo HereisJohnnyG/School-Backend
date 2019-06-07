@@ -10,6 +10,7 @@ userSchema = new Schema({
     },
     status: {
       type: Number,
+      enum: [0, 1],
       require: true
     },
     name: {
@@ -21,7 +22,8 @@ userSchema = new Schema({
       require: true
     },
     profile: {
-      type: Number,
+      type: String,
+      enum: ["admin", "guess"],
       require: true
     }
 });
@@ -37,6 +39,7 @@ teacherSchema = new Schema({
     },
     status: {
         type: Number,
+        enum: [0, 1],
         require: true
     },
     name: {
@@ -48,7 +51,8 @@ teacherSchema = new Schema({
         require: true
     },
     phd: {
-        type: Boolean
+        type: Boolean,
+        validate: { validator: function(phd) { if(phd){ return phd}}, message: 'O professor deve possuir PHD'}
     }
 })
 
@@ -63,6 +67,7 @@ courseSchema = new Schema({
     },
     status: {
         type: Number,
+        enum: [0, 1],
         require: true
     },
     name: {
@@ -91,6 +96,7 @@ studentSchema = new Schema({
     },
     status: {
         type: Number,
+        enum: [0, 1],
         require: true
     },
     name: {
