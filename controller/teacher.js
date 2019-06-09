@@ -7,7 +7,7 @@ exports.getAll = (req, res) => {
     let collun = {'_id': 0, 'status': 0, '__v': 0}
     modelTeacher.get(where,collun)
         .then(teachers => {
-            res.send(teachers);
+                res.send(teachers);
         }).catch(err => {
         console.error("Ocorreu um erro ao enviar os usuários", err);
         res.status(500).send('Ocorreu um erro');

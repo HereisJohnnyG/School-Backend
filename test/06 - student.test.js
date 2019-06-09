@@ -12,7 +12,7 @@ describe('Test Unit on /api/v1/student route', function() {
       return request(app)
         .get('/api/v1/student')
         .then(function(res) {
-            assert.equal(res.status, 200)
+            assert.equal(res.status, 200);
         });
     });
 
@@ -23,6 +23,25 @@ describe('Test Unit on /api/v1/student route', function() {
           assert.isArray(res.body);
         });
     });
+  })
+
+    describe('GET /api/v1/student/:id', function() {
+
+      it('Check if it GETs a student', function() {
+        return request(app)
+          .get('/api/v1/student/5')
+          .then(function(res) {
+              assert.equal(res.status, 200);
+          });
+      });
+  
+      it('Check if it return sent a empty array when no students is found', function() {
+        return request(app)
+          .get('/api/v1/student/10000')
+          .then(function(res) {
+            assert.isArray(res.body);
+          });
+      });
 
   });
 
@@ -107,5 +126,24 @@ describe('Test Unit on /api/v1/student route', function() {
     });
 
   });
+
+
+  describe('DELETE /api/v1/student/:id', function() {
+    it("Do delete a user", function() {
+      return request(app)
+        .delete('/api/v1/student/5')
+        .then(function(res) {
+            assert.equal(res.status, 200)
+        });
+    })
+
+    it("Don't delete a student", function() {
+      return request(app)
+        .delete('/api/v1/student/5')
+        .then(function(res) {
+            assert.equal(res.status, 204)
+        });
+    })
+  })
 
 });

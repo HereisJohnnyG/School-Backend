@@ -11,7 +11,7 @@ exports.getAll = (req, res) => {
         users => {
             res.send(users);
             if(courses == []){
-                res.status(404).send("Curso não encontrado");
+                res.status(204).send("Curso não encontrado");
             }
             else res.send(courses);
         } 
@@ -33,7 +33,7 @@ exports.getOne = (req, res) => {
         users => {
             res.send(users);
             if(courses == []){
-                res.status(404).send("Curso não encontrado");
+                res.status(204).send("Curso não encontrado");
             }
             else res.send(courses);
         } 

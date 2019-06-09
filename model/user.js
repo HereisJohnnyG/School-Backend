@@ -15,7 +15,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
 });
 
-exports.getId = () => {return ++id}
+getId = () => {return ++id}
 
 exports.get = (where, collun) =>  {
     return database.user.find(where, collun);

@@ -34,7 +34,7 @@ exports.post = (req, res) => {
     usuario.profile = req.body.profile;
   
     if(usuario.name && usuario.lastname && (usuario.profile.toUpperCase() == "ADMIN" || usuario.profile.toUpperCase() == "GUESS") ){
-        usuario.id = modelUser.getId();
+        usuario.id = getId();
         usuario.status = 1;
         modelUser.insert(usuario).then(
             user => {
@@ -45,8 +45,7 @@ exports.post = (req, res) => {
             res.status(500).send('Ocorreu um erro');
         });
     }else res.status(401).send("Campo invalido");
-}
-
+  }
 
 exports.edit = (req, res) => {
   
@@ -73,14 +72,14 @@ exports.edit = (req, res) => {
 
 exports.delete = (req, res) => {
     let id = parseInt(req.params.id);
-  //------------Alternate status to 1 for "delete" ---------------------//
-    modelUser.deleta(id).then( results => {
-        if(results.value == null) {
-            res.status(204).send("Não foi possivel encontrar o usuário")
-        }
-        else res.send("Usuário excluido com sucesso");
-    }).catch(err => {
-        console.error("Ocorreu um erro ao deletar os usuários da coleção");
-        res.status(500);
-    })
-}
+    //------------Alternate status to 1 for "delete" ---------------------//
+      modelUser.deleta(id).then( results => {
+          if(results.value == null) {
+              res.status(204).send("Não foi possivel encontrar o usuário")
+          }
+          else res.send("Usuário excluido com sucesso");
+      }).catch(err => {
+          console.error("Ocorreu um erro ao deletar os usuários da coleção");
+          res.status(500);
+      })
+  }

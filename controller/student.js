@@ -6,7 +6,7 @@ exports.getAll = (req, res) => {
     let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
     modelStudent.get(where, collun).then(estudantes =>{
     if(estudantes == []){
-        res.status(404).send("Usuário não encontrado");
+        res.status(204).send("Usuário não encontrado");
     }else res.send(estudantes);
     }).catch(err => {
         console.error("Ocorreu um erro ao conectar a collection Student");
@@ -20,7 +20,7 @@ exports.getOne = (req, res) => {
     let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
     modelStudent.get(where, collun).then(estudantes =>{
     if(estudantes == []){
-        res.status(404).send("Usuário não encontrado");
+        res.status(204).send("Usuário não encontrado");
     }else res.send(estudantes);
     }).catch(err => {
         console.error("Ocorreu um erro ao conectar a collection Student");

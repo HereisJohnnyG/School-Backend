@@ -82,7 +82,7 @@ describe('Test Unit on /api/v1/teacher route', function() {
         });
     })
 
-    it("Don't delete a user", function() {
+    it("Don't delete because there is no teacher to delete", function() {
       return request(app)
         .delete('/api/v1/teacher/5')
         .then(function(res) {
