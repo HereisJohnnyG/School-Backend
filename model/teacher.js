@@ -1,5 +1,7 @@
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
+const database = require('../schema');
+
 
 var db, id;
 
@@ -10,28 +12,28 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
-    db.collection('teacher').find({}).toArray((err, teacher) =>{id = teacher.length});
+    db.collection('teachers').find({}).toArray((err, teacher) =>{id = teacher.length});
   }
 });
 
 exports.getId = () => {return ++id}
 
 exports.get = (where, collun) =>  {
-    return db.collection('teacher').find(where, collun).toArray();
+  return database.teacher.find(where, collun);
 }
 
 exports.get_without_array = (where, collun) =>  {
-  return db.collection('teacher').findOne(where, collun);
+  return database.teacher.findOne(where, collun);
 }
 
 exports.insert = (document) => {
-    return db.collection('teacher').insertOne(document);
+    return database.teacher.create(document);
 }
 
 exports.troca = (where, document) => {
-    return db.collection('teacher').findOneAndReplace(where, document);
+    return database.teacher.findOneAndReplace(where, document);
 }
 
 exports.deleta = (where) => {
-    return db.collection('teacher').findOneAndUpdate(where, {$set: {status: 0}});
+    return database.teacher.findOneAndUpdate(where, {$set: {status: 0}});
 }

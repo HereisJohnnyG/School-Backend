@@ -1,11 +1,12 @@
 const modelCourse = require("../model/course");
 const modelStudent = require("../model/student");
 const modelTeacher = require("../model/teacher");
+const mongoose = require('mongoose');
 
 exports.getAll = (req, res) => {
     let courses;
     let where = {"status": 1};
-    let collun = {projection: {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0}};
+    let collun = {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0};
     modelCourse.get(where,collun).then(
         users => {
             res.send(users);
@@ -25,9 +26,10 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
     let courses;
     let id = parseInt(req.params.id);
-    let where = {"id": id, "status": 1};
-    let collun = {projection: {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0}};
-    modelCourse.get(where,collun).then(
+    let where = {"id": id, "status": 1, "__v": 0, "_id": 0};
+    let collun = {'_id': 0, 'status':0};
+    let collun_pop = {select: 'id name lastname phd'};
+    modelCourse.get(where,collun, collun_pop).then(
         users => {
             res.send(users);
             if(courses == []){
@@ -59,9 +61,10 @@ exports.post = (req, res) => {
             int = curso_var[i];
             let teachers = await modelTeacher.get_without_array({id: int, status: 1});
             if(teachers){
-                course.teacher.push(teachers);
+                course.teacher.push( mongoose.Types.ObjectId(teachers._id) );
             }
         }
+        console.log('111111111')
         if(course.teacher.length <= 1){
             res.status(401).send("Não foi possível registrar o aluno, somente 1 professor foi localizado");
         }else{
@@ -97,7 +100,7 @@ exports.edit = (req, res) => {
             int = teacher_var[i];
             let teachers = await modelTeacher.get_without_array({id: int, status: 1});
             if(teachers != null){
-              courses.teacher.push(teachers);
+              courses.teacher.push(mongoose.Types.ObjectId(teachers._id));
             }
           }
           
@@ -107,7 +110,7 @@ exports.edit = (req, res) => {
           }else{
             where = {"id": ide};
             modelCourse.updateCourse(where, courses).then(result => {
-                if(!result.value){
+                if(!result.n){
                     res.status(404).send("Não foi encontrado curso para ser atualizado");
                 }else{
                     res.status(200).send("Curso modificado com sucesso");

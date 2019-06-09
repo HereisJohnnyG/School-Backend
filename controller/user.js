@@ -2,7 +2,7 @@ const modelUser = require("../model/user");
 
 exports.getAll = (req, res) => {
     let where = {status:1};
-    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+    let collun = {'_id': 0, 'id': 1, 'name': 1, 'lastname':1, 'profile':1};
     modelUser.get(where,collun)
         .then(users => {
         res.send(users);
@@ -16,7 +16,7 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
     let id = parseInt(req.params.id);
     let where = {"id": id, status:1};
-    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+    let collun = {'_id': 0, 'id': 1, 'name': 1, 'lastname':1, 'profile':1};
     modelUser.get(where,collun)
         .then(users => {
         res.send(users);
@@ -62,7 +62,7 @@ exports.edit = (req, res) => {
           res.status(401).send("Não foi possivel completar a atualização")
         }else 
           //console.log(results.matchedCount);
-          if(results.matchedCount > 0){
+          if(results.n > 0){
             res.send("Usuário modificado com sucesso");
           }else res.send("Usuário não encontrado");
       }).catch(err => {

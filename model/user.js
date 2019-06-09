@@ -1,5 +1,6 @@
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
+const database = require('../schema');
 
 var db, id;
 
@@ -10,24 +11,24 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
-    db.collection('user').find({}).toArray((err, user) =>{id = user.length});
+    db.collection('users').find({}).toArray((err, user) =>{id = user.length});
   }
 });
 
 exports.getId = () => {return ++id}
 
 exports.get = (where, collun) =>  {
-    return db.collection('user').find(where, collun).toArray();
+    return database.user.find(where, collun);
 }
 
 exports.insert = (document) => {
-    return db.collection('user').insertOne(document);
+    return database.user.create(document);
 }
 
 exports.troca = (id, document) => {
-    return db.collection('user').updateOne({"id": id, "status": 1}, {$set: document});
+    return database.user.updateOne({"id": id, "status": 1}, {$set: document});
 }
 exports.deleta = (id) => {
-    return db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}});
+    return database.user.findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}});
 }
 

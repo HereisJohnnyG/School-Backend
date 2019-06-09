@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const mongoClient = require("mongodb").MongoClient;
 const app = express();
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
+const conn = require('./config.js')
+
+conn();
 
 mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){

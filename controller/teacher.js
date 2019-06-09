@@ -4,7 +4,7 @@ const modelStudent = require("../model/student");
 
 exports.getAll = (req, res) => {
     let where = {'status':1}
-    let collun = {projection: {_id: 0, status: 0}}
+    let collun = {'_id': 0, 'status': 0, '__v': 0}
     modelTeacher.get(where,collun)
         .then(teachers => {
             res.send(teachers);
@@ -17,7 +17,7 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
     let id = parseInt(req.params.id);
     let where = {"id": id, status:1};
-    let collun = {projection: {_id: 0, status: 0}}
+    let collun = {'_id': 0, 'status': 0, '__v': 0};
     modelTeacher.get(where,collun)
         .then(teachers => {
             res.send(teachers);
@@ -41,6 +41,7 @@ exports.post = (req, res) => {
             .then(e => {
                 res.status(201).send("Usuário cadastrado com sucesso");
             }).catch(e => {
+                console.error("Erro ao cadastrar usuário", e);
                 res.status(401).send("Erro ao cadastrar usuário");
             });
     }else res.status(401).send("Campo Invalido")
@@ -75,7 +76,7 @@ exports.edit = (req, res) => {
                     modelCourse.updateMany(
                         { "teacher.id": usuarios.id }, 
                         { $set: {"teacher.$": usuarios}}).then(results => {
-                          if(results){
+                          if(results.n > 0){
                             modelCourse.get({"teacher.id": id, status: 1}, {}).then(course_temo => {
                               course_temo.forEach((e) => {
                                 modelStudent.replace(
