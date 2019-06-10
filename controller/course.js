@@ -64,7 +64,6 @@ exports.post = (req, res) => {
                 course.teacher.push( mongoose.Types.ObjectId(teachers._id) );
             }
         }
-        console.log('111111111')
         if(course.teacher.length <= 1){
             res.status(401).send("Não foi possível registrar o aluno, somente 1 professor foi localizado");
         }else{

@@ -1,9 +1,10 @@
 const modelStudent = require("../model/student");
-const modelCourse = require("../model/course")
+const modelCourse = require("../model/course");
+const mongoose = require('mongoose');
 
 exports.getAll = (req, res) => {
     let where = {status:1};
-    let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
+    let collun = {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0};
     modelStudent.get(where, collun).then(estudantes =>{
     if(estudantes == []){
         res.status(204).send("Usuário não encontrado");
@@ -17,7 +18,7 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
     let id = parseInt(req.params.id);
     let where = {"id": id, status:1};
-    let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
+    let collun = {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0};
     modelStudent.get(where, collun).then(estudantes =>{
     if(estudantes == []){
         res.status(204).send("Usuário não encontrado");
@@ -47,8 +48,7 @@ exports.post = (req, res) => {
                 let int = student_temp[i];
                 let courses = await modelCourse.get_without_array({id: int, status: 1});
                 if(courses){
-                    
-                    students.course.push(courses);
+                    students.course.push( mongoose.Types.ObjectId(courses._id) );
                 }
             }
             if(students.course.length > 0){
@@ -102,7 +102,7 @@ exports.edit = (req, res) => {
             int = student_temp[i];
             let courses = await modelCourse.get_without_array({id: int, status: 1});
             if(courses){
-                students.course.push(courses);
+                students.course.push( mongoose.Types.ObjectId(courses._id));
             }
         }
         if(students.course.length > 0){

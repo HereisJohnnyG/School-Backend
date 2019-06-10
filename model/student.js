@@ -1,5 +1,6 @@
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
+const database = require('../schema');
 
 var db, id;
 
@@ -10,7 +11,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
   else{
     db = database.db('trainee-prominas');
-    db.collection('student').find({}).toArray((err, user) =>{id = user.length});
+    db.collection('students').find({}).toArray((err, user) =>{id = user.length});
   }
 });
 
@@ -19,33 +20,36 @@ exports.getId = () => {
 }
 
 exports.get = (where, collun) => {
-    return db.collection('student').find(where, collun).toArray();
+    return database.student.find(where, collun).populate({
+      path: 'course',
+      model: 'course'
+ });
 }
 
 exports.updateStudent = (where, collun) => {
-  return db.collection('student').findOneAndUpdate(where, { $set: { ...collun } });
+  return database.student.findOneAndUpdate(where, { $set: { ...collun } });
 }
 
 exports.get_without_array = (where, collun) =>  {
-  return db.collection('student').findOne(where, collun);
+  return database.student.findOne(where, collun);
 }
 
 exports.updateCourse = (id) => {
-    return db.collection('student').updateMany({}, {$pull: {course: {"id": id}}});
+    return database.student.updateMany({}, {$pull: {course: {"id": id}}});
 }
 
 exports.insertStudent = (student) => {
-    return db.collection('student').insertOne(student);
+    return database.student.create(student);
 }
 
 exports.delete = (where, set) => {
-    return db.collection('student').findOneAndUpdate(where, set); 
+    return database.student.findOneAndUpdate(where, set); 
 }
 
 exports.replace = (where, set) => {
-  return db.collection("student").updateMany(where, set);
+  return database.student.updateMany(where, set);
 }
 
 exports.updateMany = (where, collun) => {
-  return db.collection('student').updateMany(where, collun);
+  return database.student.updateMany(where, collun);
 }
