@@ -22,8 +22,12 @@ exports.getId = () => {
 exports.get = (where, collun) => {
     return database.student.find(where, collun).populate({
       path: 'course',
-      model: 'course'
- });
+      model: 'course', 
+      populate: {
+        path: 'teacher',
+        model: 'teacher'
+      }
+    }) 
 }
 
 exports.updateStudent = (where, collun) => {
