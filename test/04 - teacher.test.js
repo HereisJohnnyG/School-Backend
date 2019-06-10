@@ -76,7 +76,7 @@ describe('Test Unit on /api/v1/teacher route', function() {
   describe('DELETE /api/v1/teacher/:id', function() {
     it("Do delete a teacher", function() {
       return request(app)
-        .delete('/api/v1/teacher/5')
+        .delete('/api/v1/teacher/5000')
         .then(function(res) {
             assert.equal(res.status, 200)
         });
@@ -84,7 +84,7 @@ describe('Test Unit on /api/v1/teacher route', function() {
 
     it("Don't delete because there is no teacher to delete", function() {
       return request(app)
-        .delete('/api/v1/teacher/5')
+        .delete('/api/v1/teacher/6000')
         .then(function(res) {
             assert.equal(res.status, 204)
         });

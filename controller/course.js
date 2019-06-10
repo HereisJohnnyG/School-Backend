@@ -134,7 +134,7 @@ exports.delete = (req, res) => {
     if(info.value){        
         modelStudent.updateMany({ "course.id": id }, { $set: { "status": 0 }});
             res.send("Curso excluido com sucesso");
-    }else res.send("Não foi possivel excluir o curso");
+    }else res.status(204).send("Não foi possivel excluir o curso");
     }).catch(err => {
         console.error("Ocorreu um erro ao deletar o curso da coleção");
         res.status(500);

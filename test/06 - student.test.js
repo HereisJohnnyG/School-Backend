@@ -110,9 +110,9 @@ describe('Test Unit on /api/v1/student route', function() {
 
 
   describe('DELETE /api/v1/student/:id', function() {
-    it("Do delete a user", function() {
+    it("Do delete a student", function() {
       return request(app)
-        .delete('/api/v1/student/5')
+        .delete('/api/v1/student/5000')
         .then(function(res) {
             assert.equal(res.status, 200)
         });
@@ -120,7 +120,7 @@ describe('Test Unit on /api/v1/student route', function() {
 
     it("Don't delete a student", function() {
       return request(app)
-        .delete('/api/v1/student/5')
+        .delete('/api/v1/student/6000')
         .then(function(res) {
             assert.equal(res.status, 204)
         });
