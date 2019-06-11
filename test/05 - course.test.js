@@ -38,7 +38,7 @@ describe('Test Unit on /api/v1/course route', function() {
 
     it('Do check empty array returns 204', function() {
       return request(app)
-        .get('/api/v1/teacher/1000')
+        .get('/api/v1/course/1000')
         .then(function(res) {
           assert.equal(res.status, 204)
         });
@@ -73,7 +73,7 @@ describe('Test Unit on /api/v1/course route', function() {
       it("Don't save a new course on database if teachers field recieve less than 2 valid teachers", function() {
         return request(app)
           .post('/api/v1/course')
-          .send({ name: "Course Exemple", period: 2, city: "Ipatinga", teacher: [1, 'invalid'] })
+          .send({ name: "Course Exemple", period: 2, city: "Ipatinga", teacher: [1, 1000] })
           .then(function(res) { 
             assert.equal(res.status, 401);
           });
@@ -96,7 +96,7 @@ describe('Test Unit on /api/v1/course route', function() {
     it("Don't update a course if teacher < 2", function() {
       return request(app)
         .put('/api/v1/course/1')
-        .send({ name: "Course Sample", period: 2, city: "Ipatinga", teacher: [1, "invalid"] })
+        .send({ name: "Course Sample", period: 2, city: "Ipatinga", teacher: [1, 1000] })
         .then(function(res) { 
             assert.equal(res.status, 401);
         });

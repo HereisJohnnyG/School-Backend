@@ -3,7 +3,19 @@ const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryW
 const mongoose = require("mongoose");
 const Schema = require("../schema").userSchema;
 const User = mongoose.model('user', Schema);
+const Joi = require('joi');
 var db, id;
+
+
+//----------------------USER Validation-----------//
+const schema = Joi.object().keys({
+	name: Joi.string().required(),
+	lastname: Joi.string().required(),
+	profile: Joi.string().required(),
+});
+//-----------------------------------------------//
+
+
 
 mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   if(err){
@@ -59,7 +71,12 @@ exports.post = (req, res) => {
   usuario.id = getId();
   usuario.status = 1;
   let valid = new User(usuario);
+
+//-------------Joi Validation--------------------//
+  schema.validate(req.body, {abortEarly: false}).then(validated => {
+//-------------Mongoose Validation--------------//
   valid.validate(error => {
+//--------------Code----------------------------//
     if(!error){
       insert(usuario).then(user => {
         res.status(201).send("Usuário cadastrado com sucesso");
@@ -71,6 +88,10 @@ exports.post = (req, res) => {
     }
     else res.status(401).send("Campo invalido");
   })
+  //-------------------JOI Validation ------------//
+  }).catch(validationError=>{
+		res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+	});
 }
 
 exports.edit = (req, res) => {
@@ -81,6 +102,9 @@ exports.edit = (req, res) => {
   usuario.lastname = req.body.lastname;
   usuario.profile = req.body.profile;
   let valid = new User(usuario);
+  //-------------Joi Validation--------------------//
+  schema.validate(req.body, {abortEarly: false}).then(validated => {
+  //-------------Mongoose Validation--------------//
   valid.validate(error => {
     if(!error){
       troca(id, usuario).then(results => { 
@@ -96,6 +120,10 @@ exports.edit = (req, res) => {
       });
       }else res.status(401).send("Campo invalido");
     })
+    //-------------------JOI Validation ------------//
+  }).catch(validationError=>{
+		res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+	});
 }
 
 exports.delete = (req, res) => {

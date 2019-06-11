@@ -1,11 +1,22 @@
 const modelCourse = require("../model/course");
 const modelStudent = require("../model/student");
 const modelTeacher = require("../model/teacher");
-
+const Joi = require("joi");
 
 const mongoose = require("mongoose");
 const Schema = require("../schema").courseSchema;
 const Course = mongoose.model('course', Schema);
+
+
+//----------------------USER Validation-----------//
+const schema = Joi.object().keys({
+	name: Joi.string().required(),
+	city: Joi.string().required(),
+	period: Joi.number(),
+	teacher: Joi.array().required()
+});
+//-----------------------------------------------//
+
 
 exports.getAll = (req, res) => {
     let courses;
@@ -51,6 +62,9 @@ exports.post = (req, res) => {
     course.period = parseInt(req.body.period) || 8;
     course.id = modelCourse.getId();
     let curso_var = req.body.teacher;
+    //-------------Joi Validation--------------------//
+    schema.validate(req.body, {abortEarly: false}).then(validated => {
+    //----------------------------------------------//
     course.teacher = [];
     (async function() {
         for (let i = 0; i < curso_var.length; i++) {
@@ -74,6 +88,10 @@ exports.post = (req, res) => {
         console.error("Erro ao Criar Um Novo Curso", e);
         res.status(500).send("Erro ao Criar Um Novo Curso");
     })
+    //-------------------JOI Validation ------------//
+    }).catch(validationError=>{
+        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+    });
 }
 
 
@@ -88,7 +106,9 @@ exports.edit = (req, res) => {
     courses.id = parseInt(req.params.id);
     courses.status = 1;
     let ide = parseInt(req.params.id);
-    
+    //-------------Joi Validation--------------------//
+    schema.validate(req.body, {abortEarly: false}).then(validated => {
+    //----------------------------------------------//
     (async function() {
         for (let i = 0; i < teacher_var.length; i++) {
             int = teacher_var[i];
@@ -118,8 +138,10 @@ exports.edit = (req, res) => {
         console.log(courses.teacher.length);
         console.error("Erro ao modificar o curso", err);
         res.status(401).send("Erro ao modificar o Curso");
+    });//-------------------JOI Validation ------------//
+    }).catch(validationError=>{
+        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
     });
-     //}
 }
 
 exports.delete = (req, res) => {

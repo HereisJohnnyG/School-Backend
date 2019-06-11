@@ -4,6 +4,18 @@ const modelStudent = require("../model/student");
 const mongoose = require("mongoose");
 const Schema = require("../schema").teacherSchema;
 const Teacher = mongoose.model('teacher', Schema);
+const Joi = require("joi");
+
+
+//----------------------USER Validation-----------//
+const schema = Joi.object().keys({
+	name: Joi.string().required(),
+	lastname: Joi.string().required(),
+	phd: Joi.boolean().required(),
+});
+//-----------------------------------------------//
+
+
 
 exports.getAll = (req, res) => {
     let where = {'status':1}
@@ -42,6 +54,9 @@ exports.post = (req, res) => {
     usuario.phd = req.body.phd;
     usuario.status = 1;
     let valid = new Teacher(usuario);
+    //-------------Joi Validation--------------------//
+    schema.validate(req.body, {abortEarly: false}).then(validated => {
+    //-------------Mongoose Validation--------------//
     valid.validate(error => { 
         if(!error){
             modelTeacher.insert(usuario).then(e => {
@@ -51,6 +66,10 @@ exports.post = (req, res) => {
             });
         }else res.status(401).send("Campo Invalido")
     })
+      //-------------------JOI Validation ------------//
+    }).catch(validationError=>{
+        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+    });
 }
 
 exports.edit = (req, res) => {
@@ -63,6 +82,9 @@ exports.edit = (req, res) => {
     usuarios.status = 1;
     //console.log(usuarios)
     let valid = new Teacher(usuarios);
+    //-------------Joi Validation--------------------//
+    schema.validate(req.body, {abortEarly: false}).then(validated => {
+    //-------------Mongoose Validation--------------//
     valid.validate(error => {
         if(!error){
             where = {"id": id, "status": 1};
@@ -93,7 +115,11 @@ exports.edit = (req, res) => {
             }).catch(e => res.status(401).send("Não foi possivel completar a atualização"));
         }else res.status(401).send("Campo Invalido")
     })
-} // error
+      //-------------------JOI Validation ------------//
+    }).catch(validationError=>{
+        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+    });
+}
 
 exports.deleta = (req, res) => {
     let id = parseInt(req.params.id);

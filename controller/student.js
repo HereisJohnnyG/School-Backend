@@ -1,9 +1,18 @@
 const modelStudent = require("../model/student");
 const modelCourse = require("../model/course");
-
+const Joi = require("joi");
 const mongoose = require("mongoose");
 const Schema = require("../schema").studentSchema;
 const Student = mongoose.model('student', Schema);
+
+//----------------------USER Validation-----------//
+const schema = Joi.object().keys({
+	name: Joi.string().required(),
+	lastname: Joi.string().required(),
+	age: Joi.number().required(),
+	course: Joi.number().required()
+});
+//-----------------------------------------------//
 
 
 exports.getAll = (req, res) => {
@@ -44,6 +53,9 @@ exports.post = (req, res) => {
     student_temp.push(req.body.course);
     students.status = 1;
     students.id = modelStudent.getId();
+    //-------------Joi Validation--------------------//
+    schema.validate(req.body, {abortEarly: false}).then(validated => {
+    //----------------------------------------------//
     (async function() {
         for (let i = 0; i < student_temp.length; i++) {
             let int = student_temp[i];
@@ -66,6 +78,10 @@ exports.post = (req, res) => {
     })().catch(err => {
         console.error("Erro ao cadastrar um novo estudante", err);
         res.status(500).send("Erro ao criar Um novo estudante");
+    });
+    //-------------------JOI Validation ------------//
+    }).catch(validationError=>{
+        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
     });
 }
 
@@ -96,6 +112,9 @@ exports.edit = (req, res) => {
     let id = parseInt(req.params.id);
     students.id = parseInt(req.params.id);
     let ide = parseInt(req.params.id);
+    //-------------Joi Validation--------------------//
+    schema.validate(req.body, {abortEarly: false}).then(validated => {
+    //----------------------------------------------//
     (async function() {
         for (let i = 0; i < student_temp.length; i++) {
             let int = student_temp[i];
@@ -122,5 +141,9 @@ exports.edit = (req, res) => {
     })().catch(e => {
             console.error("erro ao editar Estudante:", e);
             res.status(401).send("Ocorreu um erro ao editar Estudante:");
+    });
+    //-------------------JOI Validation ------------//
+    }).catch(validationError=>{
+        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
     });
 }
