@@ -26,6 +26,27 @@ describe('Test Unit on /api/v1/user route', function() {
 
   });
 
+
+  describe('GET /api/v1/user/:id', function() {
+
+    it('Do check if GET/:id is responding', function() {
+      return request(app)
+        .get('/api/v1/user/1')
+        .then(function(res) {
+            assert.equal(res.status, 200)
+        });
+    });
+
+    it('Do check empty array returns 204', function() {
+      return request(app)
+        .get('/api/v1/user/1000')
+        .then(function(res) {
+          assert.equal(res.status, 204)
+        });
+    });
+
+  });
+
   describe('POST /api/v1/user', function() {
 
     it("Don't save a user on database if profile != 'guess' or 'admin'", function() {

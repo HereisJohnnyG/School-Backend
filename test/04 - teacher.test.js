@@ -26,6 +26,27 @@ describe('Test Unit on /api/v1/teacher route', function() {
 
   });
 
+
+  describe('GET /api/v1/teacher/:id', function() {
+
+    it('Do check if GET/:id is responding', function() {
+      return request(app)
+        .get('/api/v1/teacher/1')
+        .then(function(res) {
+            assert.equal(res.status, 200)
+        });
+    });
+
+    it('Do check empty array returns 204', function() {
+      return request(app)
+        .get('/api/v1/teacher/1000')
+        .then(function(res) {
+          assert.equal(res.status, 204)
+        });
+    });
+  });
+
+
   describe('POST /api/v1/teacher', function() {
 
     it("Do save a new teacher on database if phd = true", function() {

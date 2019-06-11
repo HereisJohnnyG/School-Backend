@@ -68,7 +68,7 @@ exports.post = (req, res) => {
                 res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
                 }else res.status(201).send("Curso Cadastrado com Sucesso.");
             });
-        }else res.status(403).send("Os dados devem ser preenchidos");
+        }else res.status(401).send("Os dados devem ser preenchidos");
         }) 
       })().catch(e => {
         console.error("Erro ao Criar Um Novo Curso", e);

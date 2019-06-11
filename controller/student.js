@@ -60,13 +60,12 @@ exports.post = (req, res) => {
                     res.status(201).send("Estudante Cadastrado com Sucesso.");
                 })
             }else{
-                console.log(error);
                 res.status(401).send("Erro ao Criar Um Novo estudante, campo invalido");
             }
         })
     })().catch(err => {
         console.error("Erro ao cadastrar um novo estudante", err);
-        res.status(401).send("Erro ao criar Um novo estudante");
+        res.status(500).send("Erro ao criar Um novo estudante");
     });
 }
 

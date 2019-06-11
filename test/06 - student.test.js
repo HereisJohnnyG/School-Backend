@@ -27,6 +27,28 @@ describe('Test Unit on /api/v1/student route', function() {
   });
 
 
+  describe('GET /api/v1/student/:id', function() {
+
+    it('Do check if GET/:id is responding', function() {
+      return request(app)
+        .get('/api/v1/student/1')
+        .then(function(res) {
+            assert.equal(res.status, 200)
+        });
+    });
+
+    it('Do check empty array returns 204', function() {
+      return request(app)
+        .get('/api/v1/student/1000')
+        .then(function(res) {
+          assert.equal(res.status, 204)
+        });
+    });
+    
+  });
+
+
+
   describe('POST /api/v1/student', function() {
 
 
@@ -60,7 +82,7 @@ describe('Test Unit on /api/v1/student route', function() {
     it("Don't save a new student if it has an invalid course", function() {
       return request(app)
         .post('/api/v1/student')
-        .send({ name: "John", lastname: "Doe", age: 21, course: 'invalid'})
+        .send({ name: "John", lastname: "Doe", age: 21, course: 10000})
         .then(function(res) { 
           assert.equal(res.status, 401);
         });

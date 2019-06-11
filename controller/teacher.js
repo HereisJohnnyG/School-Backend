@@ -41,7 +41,6 @@ exports.post = (req, res) => {
     usuario.id = modelTeacher.getId();
     usuario.phd = req.body.phd;
     usuario.status = 1;
-    console.log(usuario)
     let valid = new Teacher(usuario);
     valid.validate(error => { 
         if(!error){

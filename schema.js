@@ -109,7 +109,7 @@ studentSchema = new Schema({
     },
     age: {
         type: Number,
-        min: [17, 'Muito novo'],
+        min: [17],
     },
     course: {
         type: [courseSchema],
