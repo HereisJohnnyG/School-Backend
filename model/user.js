@@ -43,7 +43,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
 });
 
-
+//-------------------GET----------------------------//
 
 exports.insert_data = (req, res) => {
     let where = {status:1};
@@ -77,7 +77,7 @@ exports.getOne = (req, res) => {
     });
 }
 
-
+//-------------------POST----------------------------//
 exports.post = (req, res) => {
   let usuario = {};
   usuario.name = req.body.name;
@@ -108,6 +108,9 @@ exports.post = (req, res) => {
 		res.status(401).send(validationError.message);
 	});
 }
+
+
+//-------------------PUT----------------------------//
 
 exports.edit = (req, res) => {
   let usuario = {};
@@ -140,6 +143,9 @@ exports.edit = (req, res) => {
 		res.status(401).send(validationError.message);
 	});
 }
+
+
+/******************DELETE************************/
 
 exports.delete = (req, res) => {
   let id = parseInt(req.params.id);

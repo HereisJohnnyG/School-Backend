@@ -1,6 +1,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+
+// User schema and Model
+
+
 userSchema = new Schema({
     id: {
       type: Number,
@@ -30,6 +34,9 @@ userSchema = new Schema({
 
 var user = mongoose.model('user', userSchema);
 
+// teacher schema and Model
+
+
 teacherSchema = new Schema({
     id: {
         type: Number,
@@ -57,6 +64,8 @@ teacherSchema = new Schema({
 })
 
 var teacher = mongoose.model('teacher', teacherSchema);
+
+// Course schema and Model
 
 courseSchema = new Schema({
     id: {
@@ -86,6 +95,7 @@ courseSchema = new Schema({
 
 var course = mongoose.model('course', courseSchema);
 
+// Student Schema and Model
 
 studentSchema = new Schema({
     id: {

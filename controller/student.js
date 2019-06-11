@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const Schema = require("../schema").studentSchema;
 const Student = mongoose.model('student', Schema);
 
-//----------------------USER Validation-----------//
+//----------------------USER VALIDATION-----------//
 const schema = Joi.object().keys({
     name: Joi.string().required()
     .error(errors => {

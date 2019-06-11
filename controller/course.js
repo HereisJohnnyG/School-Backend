@@ -37,7 +37,7 @@ const schema = Joi.object().keys({
 });
 //-----------------------------------------------//
 
-
+/***********************GET**************************/
 exports.getAll = (req, res) => {
     let courses;
     let where = {"status": 1};
@@ -73,6 +73,9 @@ exports.getOne = (req, res) => {
         res.status(500).send("Ocorreu um erro ao procurar o curso");
     });
 }
+
+
+/***********************POST**************************/
 
 exports.post = (req, res) => {
     course = {};
@@ -117,13 +120,13 @@ exports.post = (req, res) => {
     });
 }
 
-
+/***********************PUT**************************/
 exports.edit = (req, res) => {
     courses = {};
     courses.name = req.body.name;
     courses.teacher = [];
     courses.city = req.body.city;
-    let teacher_var = [];
+    let teacher_var = []; // Puts  the course on a temporary variable in case student can have more courses
     teacher_var = req.body.teacher;
     courses.period = parseInt(req.body.period) || 8;
     courses.id = parseInt(req.params.id);
@@ -166,6 +169,8 @@ exports.edit = (req, res) => {
         res.status(401).send(validationError.message);
     });
 }
+
+//----------------DELETE--------------------------------//
 
 exports.delete = (req, res) => {
     let id = parseInt(req.params.id);

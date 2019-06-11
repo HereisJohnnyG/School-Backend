@@ -30,7 +30,7 @@ const schema = Joi.object().keys({
 });
 //-----------------------------------------------//
 
-
+/*****************GET**************************/
 
 exports.getAll = (req, res) => {
     let where = {'status':1}
@@ -61,6 +61,7 @@ exports.getOne = (req, res) => {
     });
 }
 
+/******************POST**************************/
 exports.post = (req, res) => {
     let usuario = {};
     usuario.name = req.body.name;
@@ -86,6 +87,9 @@ exports.post = (req, res) => {
         res.status(401).send(validationError.message);
     });
 }
+
+
+/*******************PUT********************/
 
 exports.edit = (req, res) => {
     let usuarios = {};
@@ -135,6 +139,8 @@ exports.edit = (req, res) => {
         res.status(401).send(validationError.message);
     });
 }
+
+/***************DELETE***********************/
 
 exports.deleta = (req, res) => {
     let id = parseInt(req.params.id);

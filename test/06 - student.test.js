@@ -31,7 +31,7 @@ describe('Test Unit on /api/v1/student route', function() {
 
     it('Do check if GET/:id is responding', function() {
       return request(app)
-        .get('/api/v1/student/1')
+        .get('/api/v1/student/3')
         .then(function(res) {
             assert.equal(res.status, 200)
         });
