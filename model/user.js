@@ -133,11 +133,11 @@ exports.edit = (req, res) => {
       }).catch(err => {
         res.status(401).send("Erro na atualização");
       });
-      }else res.status(401).send("Campo invalido");
+      }else res.status(401).send(error.errors.profile.message);
     })
     //-------------------JOI Validation ------------//
   }).catch(validationError=>{
-		res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+		res.status(401).send(validationError.message);
 	});
 }
 

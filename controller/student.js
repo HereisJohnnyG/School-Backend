@@ -7,10 +7,30 @@ const Student = mongoose.model('student', Schema);
 
 //----------------------USER Validation-----------//
 const schema = Joi.object().keys({
-	name: Joi.string().required(),
-	lastname: Joi.string().required(),
-	age: Joi.number().required(),
-	course: Joi.number().required()
+    name: Joi.string().required()
+    .error(errors => {
+        return {
+          message: "O campo name está incorreto ou não foi informado",
+        };
+    }),
+	lastname: Joi.string().required()
+    .error(errors => {
+        return {
+          message: "O campo lastname está incorreto ou não foi informado",
+        };
+    }),
+    age: Joi.number().required()
+    .error(errors => {
+        return {
+          message: "O campo age está incorreto ou não foi informado",
+        };
+    }),
+    course: Joi.number().required()
+    .error(errors => {
+        return {
+          message: "O campo course está incorreto ou não foi informado",
+        };
+    }),
 });
 //-----------------------------------------------//
 
@@ -87,7 +107,7 @@ exports.post = (req, res) => {
     });
     //-------------------JOI VALIDATION ------------//
     }).catch(validationError=>{
-        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+        res.status(401).send(validationError.message);
     });
 }
 
@@ -141,7 +161,11 @@ exports.edit = (req, res) => {
                 else{  res.status(401).send("Estudante não encontrado");}
                 })
             }else{
-                res.status(401).send("Necessário cadastrar um curso válido para o aluno");
+                if(error.errors.age != null){
+                    fail = error.errors.age.message
+                }
+                else fail = error.errors.course.message;
+                res.status(401).send(fail);
             }
         })
     })().catch(e => {
@@ -150,6 +174,6 @@ exports.edit = (req, res) => {
     });
     //-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+        res.status(401).send(validationError.message);
     });
 }

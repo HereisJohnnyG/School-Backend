@@ -9,9 +9,24 @@ const Joi = require("joi");
 
 //----------------------USER Validation-----------//
 const schema = Joi.object().keys({
-	name: Joi.string().required(),
-	lastname: Joi.string().required(),
-	phd: Joi.boolean().required(),
+    name: Joi.string().required()
+    .error(errors => {
+        return {
+          message: "O campo name está incorreto ou não foi informado",
+        };
+    }),
+	lastname: Joi.string().required()
+    .error(errors => {
+        return {
+          message: "O campo lastname está incorreto ou não foi informado",
+        };
+    }),
+    phd: Joi.boolean().required()
+    .error(errors => {
+        return {
+          message: "O campo phd está incorreto ou não foi informado",
+        };
+    }),
 });
 //-----------------------------------------------//
 
@@ -68,7 +83,7 @@ exports.post = (req, res) => {
     })
       //-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+        res.status(401).send(validationError.message);
     });
 }
 
@@ -113,11 +128,11 @@ exports.edit = (req, res) => {
                     })
                 }
             }).catch(e => res.status(401).send("Não foi possivel completar a atualização"));
-        }else res.status(401).send("Campo Invalido")
+        }else res.status(401).send(error.errors.phd.message)
     })
       //-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+        res.status(401).send(validationError.message);
     });
 }
 

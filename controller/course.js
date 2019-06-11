@@ -10,10 +10,30 @@ const Course = mongoose.model('course', Schema);
 
 //----------------------USER Validation-----------//
 const schema = Joi.object().keys({
-	name: Joi.string().required(),
-	city: Joi.string().required(),
-	period: Joi.number(),
-	teacher: Joi.array().required()
+    name: Joi.string().required()
+    .error(errors => {
+        return {
+          message: "O campo nome está incorreto ou não foi informado",
+        };
+    }),
+    city: Joi.string().required()
+    .error(errors => {
+        return {
+          message: "O campo cidade está incorreto ou não foi informado",
+        };
+    }),
+    period: Joi.number()
+    .error(errors => {
+        return {
+          message: "O campo period está incorreto ou não foi informado",
+        };
+    }),
+    teacher: Joi.array().required()
+    .error(errors => {
+        return {
+          message: "O campo teacher está incorreto ou não foi informado",
+        };
+    }),
 });
 //-----------------------------------------------//
 
@@ -93,7 +113,7 @@ exports.post = (req, res) => {
     })
     //-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+        res.status(401).send(validationError.message);
     });
 }
 
@@ -135,7 +155,7 @@ exports.edit = (req, res) => {
                 })
             }
             })
-        }else res.status(401).send("Os dados devem ser preenchidos");
+        }else res.status(401).send(error.errors.teacher.message);
     })
     })().catch(err => {
         console.log(courses.teacher.length);
@@ -143,7 +163,7 @@ exports.edit = (req, res) => {
         res.status(401).send("Erro ao modificar o Curso");
     });//-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+        res.status(401).send(validationError.message);
     });
 }
 
