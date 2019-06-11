@@ -23,7 +23,7 @@ userSchema = new Schema({
     },
     profile: {
       type: String,
-      enum: ["admin", "guess"],
+      enum: {values: ["admin", "guess"], message:"Profile deve ser admin ou guess"},
       require: true
     }
 });
@@ -52,7 +52,7 @@ teacherSchema = new Schema({
     },
     phd: {
         type: Boolean,
-        validate: [val => {return val === true},  'O professor deve possuir PHD']
+        validate: [val => {return val === true}, 'O professor deve possuir PHD para ser cadastrado']
     }
 })
 
@@ -109,12 +109,12 @@ studentSchema = new Schema({
     },
     age: {
         type: Number,
-        min: [17],
+        min: [17, 'Idade inválida, idade minima é de 17 anos'],
     },
     course: {
         type: [courseSchema],
         require: true,
-        validate: [val => {return val.length == 1}, 'São necessários pelo menos 2 professores válidos']
+        validate: [val => {return val.length == 1}, 'Deve ser cadastrado um curso válido']
     }
 })
 

@@ -5,8 +5,11 @@ const controller = require("../controller/teacher");
 
 app.get('/', controller.getAll);
 app.get('/:id', controller.getOne);
+
 app.post('/', controller.post);
+
 app.put('/:id', controller.edit);
+
 app.delete('/:id', controller.deleta);
 
 module.exports = app;

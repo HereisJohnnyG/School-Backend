@@ -64,7 +64,7 @@ exports.post = (req, res) => {
             }).catch(e => {
                 res.status(401).send("Erro ao cadastrar usuário");
             });
-        }else res.status(401).send("Campo Invalido")
+        }else res.status(401).send(error.errors.phd.message)
     })
       //-------------------JOI Validation ------------//
     }).catch(validationError=>{

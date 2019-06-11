@@ -9,9 +9,24 @@ var db, id;
 
 //----------------------USER Validation-----------//
 const schema = Joi.object().keys({
-	name: Joi.string().required(),
-	lastname: Joi.string().required(),
-	profile: Joi.string().required(),
+  name: Joi.string().required()
+  .error(errors => {
+    return {
+      message: "O campo nome está incorreto ou não foi informado",
+    };
+  }),
+  lastname: Joi.string().required()
+  .error(errors => {
+    return {
+      message: "O campo sobrenome está incorreto ou não foi informado",
+    };
+  }),
+  profile: Joi.string().required()
+  .error(errors => {
+    return {
+      message: "O campo Profile está incorreto ou não foi informado",
+    };
+  }),
 });
 //-----------------------------------------------//
 
@@ -86,11 +101,11 @@ exports.post = (req, res) => {
           res.status(500).send('Ocorreu um erro');
       });
     }
-    else res.status(401).send("Campo invalido");
+    else res.status(401).send(error.errors.profile.message);
   })
   //-------------------JOI Validation ------------//
   }).catch(validationError=>{
-		res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
+		res.status(401).send(validationError.message);
 	});
 }
 
@@ -139,6 +154,8 @@ exports.delete = (req, res) => {
         res.status(500);
     })
 }
+
+
 
 getId = () => {return ++id}
 

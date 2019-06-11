@@ -41,6 +41,9 @@ app.use(`${baseAPI}/course`, require('./routes/course'));
 app.use(`${baseAPI}/teacher`, require('./routes/teacher'));
 app.use(`${baseAPI}/user`, require('./routes/user'));
 
+//------------------JSON-----------------------------------//
+app.use(`${baseAPI}/JSON`, require('./routes/json'));
+
 
 //Listening on Heroku or localhost:3000
 

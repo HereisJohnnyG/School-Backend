@@ -65,6 +65,7 @@ exports.post = (req, res) => {
             }
         }
 
+        //----------------------MONGOOSE VALIDATION AND DATABASE STORAGE--------//
         let valid = new Student(students);
         valid.validate(error => {
             if(!error){
@@ -72,14 +73,19 @@ exports.post = (req, res) => {
                     res.status(201).send("Estudante Cadastrado com Sucesso.");
                 })
             }else{
-                res.status(401).send("Erro ao Criar Um Novo estudante, campo invalido");
+                if(error.errors.age != null){
+                    fail = error.errors.age.message
+                }
+                else fail = error.errors.course.message;
+                res.status(401).send(fail);
             }
         })
+        //--------------------------ASYNC CATCH-----------------------------//
     })().catch(err => {
         console.error("Erro ao cadastrar um novo estudante", err);
         res.status(500).send("Erro ao criar Um novo estudante");
     });
-    //-------------------JOI Validation ------------//
+    //-------------------JOI VALIDATION ------------//
     }).catch(validationError=>{
         res.status(401).send('Campos obrigatórios não preenchidos ou preenchidos incorretamente.');
     });

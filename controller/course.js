@@ -67,6 +67,7 @@ exports.post = (req, res) => {
     //----------------------------------------------//
     course.teacher = [];
     (async function() {
+        //--------------------store teacher's object into course ------------//
         for (let i = 0; i < curso_var.length; i++) {
             int = curso_var[i];
             let teachers = await modelTeacher.get_without_array({id: int, status: 1});
@@ -74,6 +75,7 @@ exports.post = (req, res) => {
                 course.teacher.push(teachers);
             }
         }
+        //-------------------Mongoose Validation and database storage----------------------//
         let valid = new Course(course);
         valid.validate(error => {
         if(!error){
@@ -82,8 +84,9 @@ exports.post = (req, res) => {
                 res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
                 }else res.status(201).send("Curso Cadastrado com Sucesso.");
             });
-        }else res.status(401).send("Os dados devem ser preenchidos");
-        }) 
+        }else res.status(401).send(error.errors.teacher.message);
+        })
+        //------------------Catch Errors ---------------------------//
       })().catch(e => {
         console.error("Erro ao Criar Um Novo Curso", e);
         res.status(500).send("Erro ao Criar Um Novo Curso");
