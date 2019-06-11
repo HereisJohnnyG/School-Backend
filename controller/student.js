@@ -1,5 +1,10 @@
 const modelStudent = require("../model/student");
-const modelCourse = require("../model/course")
+const modelCourse = require("../model/course");
+
+const mongoose = require("mongoose");
+const Schema = require("../schema").studentSchema;
+const Student = mongoose.model('student', Schema);
+
 
 exports.getAll = (req, res) => {
     let where = {status:1};
@@ -39,29 +44,30 @@ exports.post = (req, res) => {
     student_temp.push(req.body.course);
     students.status = 1;
     students.id = modelStudent.getId();
-
-    if(students.name && students.lastname && students.age && req.body.course && students.age >= 17){
-        
-        (async function() {
-            for (let i = 0; i < student_temp.length; i++) {
-                let int = student_temp[i];
-                let courses = await modelCourse.get_without_array({id: int, status: 1});
-                if(courses){
-                    
-                    students.course.push(courses);
-                }
+    (async function() {
+        for (let i = 0; i < student_temp.length; i++) {
+            let int = student_temp[i];
+            let courses = await modelCourse.get_without_array({id: int, status: 1});
+            if(courses){           
+                students.course.push(courses);
             }
-            if(students.course.length > 0){
-                //console.log('------->',students.course);
+        }
+        console.log(students)
+        let valid = new Student(students);
+        valid.validate(error => {
+            if(!error){
                 modelStudent.insertStudent(students).then( result => {
-                  res.status(201).send("Estudante Cadastrado com Sucesso.");
-                }).catch(err => {
-                    console.error("Erro ao cadastrar um novo estudante", err);
-                    res.status(401).send("Erro ao criar Um novo estudante");
+                    res.status(201).send("Estudante Cadastrado com Sucesso.");
                 })
-            }else res.status(401).send("Erro ao criar Um novo estudante, curso invalido");
-        })();
-        }else{res.status(401).send("Erro ao Criar Um Novo estudante, campo invalido");}
+            }else{
+                console.log(error);
+                res.status(401).send("Erro ao Criar Um Novo estudante, campo invalido");
+            }
+        })
+    })().catch(err => {
+        console.error("Erro ao cadastrar um novo estudante", err);
+        res.status(401).send("Erro ao criar Um novo estudante");
+    });
 }
 
 

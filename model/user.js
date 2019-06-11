@@ -1,6 +1,8 @@
 const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
-
+const mongoose = require("mongoose");
+const Schema = require("../schema").userSchema;
+const User = mongoose.model('user', Schema);
 var db, id;
 
 mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
@@ -50,30 +52,34 @@ exports.post = (req, res) => {
   usuario.name = req.body.name;
   usuario.lastname = req.body.lastname;
   usuario.profile = req.body.profile;
-
-  if(usuario.name && usuario.lastname && (usuario.profile.toUpperCase() == "ADMIN" || usuario.profile.toUpperCase() == "GUESS") ){
-      usuario.id = getId();
-      usuario.status = 1;
-      insert(usuario).then(
-          user => {
-              res.status(201).send("Usuário cadastrado com sucesso");
+  usuario.id = getId();
+  usuario.status = 1;
+  let valid = new User(usuario);
+  valid.validate(error => {
+    if(!error){
+      insert(usuario).then(user => {
+        res.status(201).send("Usuário cadastrado com sucesso");
       }).catch(err => {
           console.log(err);
           console.error("Ocorreu um erro ao conectar a collection User");
           res.status(500).send('Ocorreu um erro');
       });
-  }else res.status(401).send("Campo invalido");
+    }
+    else res.status(401).send("Campo invalido");
+  })
 }
 
 exports.edit = (req, res) => {
-  let usuarios = {};
-    usuarios.name = req.body.name;
-    usuarios.lastname = req.body.lastname;
-    usuarios.profile = req.body.profile;
-    if(req.body.name && req.body.lastname && (req.body.profile.toUpperCase() == "ADMIN" || req.body.profile.toUpperCase() == "GUESS")){
-      let id = parseInt(req.params.id);
-      usuarios.id = id;
-      troca(id, usuarios).then(results => { 
+  let usuario = {};
+  let id = parseInt(req.params.id);
+  usuario.id = id;
+  usuario.name = req.body.name;
+  usuario.lastname = req.body.lastname;
+  usuario.profile = req.body.profile;
+  let valid = new User(usuario);
+  valid.validate(error => {
+    if(!error){
+      troca(id, usuario).then(results => { 
         if(results == null) {
           res.status(401).send("Não foi possivel completar a atualização")
         }else 
@@ -84,7 +90,8 @@ exports.edit = (req, res) => {
       }).catch(err => {
         res.status(401).send("Erro na atualização");
       });
-    }else res.status(401).send("Campo invalido");
+      }else res.status(401).send("Campo invalido");
+    })
 }
 
 exports.delete = (req, res) => {

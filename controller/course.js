@@ -2,6 +2,11 @@ const modelCourse = require("../model/course");
 const modelStudent = require("../model/student");
 const modelTeacher = require("../model/teacher");
 
+
+const mongoose = require("mongoose");
+const Schema = require("../schema").courseSchema;
+const Course = mongoose.model('course', Schema);
+
 exports.getAll = (req, res) => {
     let courses;
     let where = {"status": 1};
@@ -44,17 +49,14 @@ exports.getOne = (req, res) => {
 
 exports.post = (req, res) => {
     course = {};
-    if(req.body.name && req.body.city && (req.body.teacher.length >= 2)){
-      course.status = 1;
-      course.name = req.body.name;
-      course.city = req.body.city
-      course.period = parseInt(req.body.period) || 8;
-      course.id = modelCourse.getId();
-  
-      let curso_var = req.body.teacher;
-
-      course.teacher = [];
-      (async function() {
+    course.status = 1;
+    course.name = req.body.name;
+    course.city = req.body.city
+    course.period = parseInt(req.body.period) || 8;
+    course.id = modelCourse.getId();
+    let curso_var = req.body.teacher;
+    course.teacher = [];
+    (async function() {
         for (let i = 0; i < curso_var.length; i++) {
             int = curso_var[i];
             let teachers = await modelTeacher.get_without_array({id: int, status: 1});
@@ -62,20 +64,20 @@ exports.post = (req, res) => {
                 course.teacher.push(teachers);
             }
         }
-        if(course.teacher.length <= 1){
-            res.status(401).send("Não foi possível registrar o aluno, somente 1 professor foi localizado");
-        }else{
+        let valid = new Course(course);
+        valid.validate(error => {
+        if(!error){
             modelCourse.insertCourse(course).then(result => {
                 if(course.teacher.length < curso_var.length){
                 res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
                 }else res.status(201).send("Curso Cadastrado com Sucesso.");
             });
-        }
+        }else res.status(403).send("Os dados devem ser preenchidos");
+        }) 
       })().catch(e => {
         console.error("Erro ao Criar Um Novo Curso", e);
         res.status(500).send("Erro ao Criar Um Novo Curso");
     })
-}else res.status(403).send("Os dados devem ser preenchidos");
 }
 
 
@@ -87,44 +89,41 @@ exports.edit = (req, res) => {
     let teacher_var = [];
     teacher_var = req.body.teacher;
     courses.period = parseInt(req.body.period) || 8;
-    if(courses.name && courses.city){
-      courses.id = parseInt(req.params.id);
-      courses.status = 1;
-      let ide = parseInt(req.params.id);
-      
-        (async function() {
-          for (let i = 0; i < teacher_var.length; i++) {
+    courses.id = parseInt(req.params.id);
+    courses.status = 1;
+    let ide = parseInt(req.params.id);
+    
+    (async function() {
+        for (let i = 0; i < teacher_var.length; i++) {
             int = teacher_var[i];
             let teachers = await modelTeacher.get_without_array({id: int, status: 1});
             if(teachers != null){
-              courses.teacher.push(teachers);
+                courses.teacher.push(teachers);
             }
-          }
-          
-          if(parseInt(courses.teacher.length) <= 1){
-            //console.log('000000000000');
-            res.status(401).send("Não foi possível registrar o aluno, somente 1 professor foi localizado");
-          }else{
+        }
+        let valid = new Course(courses);
+        valid.validate(error => {
+        if(!error){
             where = {"id": ide};
             modelCourse.updateCourse(where, courses).then(result => {
-                if(!result.value){
-                    res.status(404).send("Não foi encontrado curso para ser atualizado");
-                }else{
-                    res.status(200).send("Curso modificado com sucesso");
-                    modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
-                    results => {
-                        //console.log(course.teacher);
-                        
-                    })
-                }
-            }).catch(err => {
-                console.log(courses.teacher.length);
-                console.error("Erro ao modificar o curso", err);
-                res.status(401).send("Erro ao modificar o Curso");
+            if(!result.value){
+                res.status(404).send("Não foi encontrado curso para ser atualizado");
+            }else{
+                res.status(200).send("Curso modificado com sucesso");
+                modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
+                results => {
+                    //console.log(course.teacher);   
+                })
+            }
             })
-        }
-    })(); 
-     }else res.status(401).send("Os dados devem ser preenchidos");
+        }else res.status(401).send("Os dados devem ser preenchidos");
+    })
+    })().catch(err => {
+        console.log(courses.teacher.length);
+        console.error("Erro ao modificar o curso", err);
+        res.status(401).send("Erro ao modificar o Curso");
+    });
+     //}
 }
 
 exports.delete = (req, res) => {

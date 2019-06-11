@@ -1,6 +1,9 @@
 const modelTeacher = require("../model/teacher");
 const modelCourse = require("../model/course");
 const modelStudent = require("../model/student");
+const mongoose = require("mongoose");
+const Schema = require("../schema").teacherSchema;
+const Teacher = mongoose.model('teacher', Schema);
 
 exports.getAll = (req, res) => {
     let where = {'status':1}
@@ -31,70 +34,62 @@ exports.post = (req, res) => {
     let usuario = {};
     usuario.name = req.body.name;
     usuario.lastname = req.body.lastname;
-    if(usuario.name && usuario.lastname && (req.body.phd == true)){
-        usuario.id = modelTeacher.getId();
-        if(typeof(req.body.phd) == 'boolean'){
-        usuario.phd = req.body.phd;
-        }
-        usuario.status = 1;
-        modelTeacher.insert(usuario)
-            .then(e => {
+    usuario.id = modelTeacher.getId();
+    usuario.phd = req.body.phd;
+    usuario.status = 1;
+    console.log(usuario)
+    let valid = new Teacher(usuario);
+    valid.validate(error => { 
+        if(!error){
+            modelTeacher.insert(usuario).then(e => {
                 res.status(201).send("Usuário cadastrado com sucesso");
             }).catch(e => {
                 res.status(401).send("Erro ao cadastrar usuário");
             });
-    }else res.status(401).send("Campo Invalido")
+        }else res.status(401).send("Campo Invalido")
+    })
 }
 
 exports.edit = (req, res) => {
-    if(req.body.name && req.body.lastname && (req.body.phd == true)){ //Business rule (name and lastname must have a value
     let usuarios = {};
-    //Fill teachers data
     usuarios.name = req.body.name;
     usuarios.lastname = req.body.lastname;
-    
-    //verify if PHD is boolean
-    if(typeof(req.body.phd) == 'boolean'){
-      usuarios.phd = req.body.phd;
-    }
-  
+    usuarios.phd = req.body.phd;
     let id = parseInt(req.params.id);
     usuarios.id = id;
     usuarios.status = 1;
-
-
-    where = {"id": id, "status": 1};
-    
-    modelTeacher.troca(where, usuarios)
-        .then(
+    console.log(usuarios)
+    let valid = new Teacher(usuarios);
+    valid.validate(error => {
+        if(!error){
+            where = {"id": id, "status": 1};
+            modelTeacher.troca(where, usuarios).then(
             results => {
                 if(results.value == null) {
                     res.status(401).send("Não foi possivel completar a atualização")
                 }
                 else{ 
                     modelCourse.updateMany(
-                        { "teacher.id": usuarios.id }, 
-                        { $set: {"teacher.$": usuarios}}).then(results => {
-                          if(results){
+                    { "teacher.id": usuarios.id }, 
+                    { $set: {"teacher.$": usuarios}}).then(results => {
+                        if(results){
                             modelCourse.get({"teacher.id": id, status: 1}, {}).then(course_temo => {
                               course_temo.forEach((e) => {
                                 modelStudent.replace(
-                                  {"status": 1, "course.id": e.id},
-                                  {$set: {"course": e}})
+                                {"status": 1, "course.id": e.id},
+                                {$set: {"course": e}})
                                 })
                               })
-                        
-                             res.send("Professor modificado com sucesso");
+                              res.send("Professor modificado com sucesso");
                           }
                           else{
                             res.send('Erro na modificação');
                           }
-                      })
-                    }
-
-            })
-            .catch(e => res.status(401).send("Não foi possivel completar a atualização"));
-    }else res.status(401).send("Campo Invalido")
+                    })
+                }
+            }).catch(e => res.status(401).send("Não foi possivel completar a atualização"));
+        }else res.status(401).send("Campo Invalido")
+    })
 } // error
 
 exports.deleta = (req, res) => {
