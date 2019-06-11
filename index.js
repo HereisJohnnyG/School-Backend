@@ -14,23 +14,17 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
   }
 });
 
-
-//-------------------TEST---------------------
-
-
-
-
 const baseAPI = "/api/v1";
 
 
 app.use(bodyParser.json());
 
 app.get(baseAPI, function (req, res) {
-  res.send('Hello World!');
+  res.status(200).send('Hello World!');
 });
 
 app.post(baseAPI, function (req, res) {
-  res.send('Hello World');
+  res.status(200).send('Hello World');
 });
 
 

@@ -45,7 +45,7 @@ mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
 
 //-------------------GET----------------------------//
 
-exports.insert_data = (req, res) => {
+exports.getAll = (req, res) => {
     let where = {status:1};
     let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
     get(where,collun)
