@@ -10,7 +10,9 @@ exports.getAll = (req, res) => {
     let collun = {projection: {_id: 0, status: 0}}
     modelTeacher.get(where,collun)
         .then(teachers => {
-            res.send(teachers);
+            if(teachers.length > 0){
+                res.send(teachers);
+              }else res.status(204).send("Nenhum valor a ser exibido");
         }).catch(err => {
         console.error("Ocorreu um erro ao enviar os usuários", err);
         res.status(500).send('Ocorreu um erro');
@@ -23,7 +25,9 @@ exports.getOne = (req, res) => {
     let collun = {projection: {_id: 0, status: 0}}
     modelTeacher.get(where,collun)
         .then(teachers => {
-            res.send(teachers);
+            if(teachers.length > 0){
+                res.send(teachers);
+            }else res.status(204).send("Nenhum valor a ser exibido");
         }).catch(err => {
         console.error("Ocorreu um erro ao enviar os usuários", err);
         res.status(500).send('Ocorreu um erro');
@@ -58,7 +62,7 @@ exports.edit = (req, res) => {
     let id = parseInt(req.params.id);
     usuarios.id = id;
     usuarios.status = 1;
-    console.log(usuarios)
+    //console.log(usuarios)
     let valid = new Teacher(usuarios);
     valid.validate(error => {
         if(!error){

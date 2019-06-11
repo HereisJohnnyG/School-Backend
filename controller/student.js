@@ -10,9 +10,9 @@ exports.getAll = (req, res) => {
     let where = {status:1};
     let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
     modelStudent.get(where, collun).then(estudantes =>{
-    if(estudantes == []){
-        res.status(404).send("Usuário não encontrado");
-    }else res.send(estudantes);
+        if(estudantes.length > 0){
+            res.send(estudantes);
+        }else res.status(204).send("Nenhum valor a ser exibido");
     }).catch(err => {
         console.error("Ocorreu um erro ao conectar a collection Student");
         send.status(500);
@@ -24,9 +24,9 @@ exports.getOne = (req, res) => {
     let where = {"id": id, status:1};
     let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
     modelStudent.get(where, collun).then(estudantes =>{
-    if(estudantes == []){
-        res.status(404).send("Usuário não encontrado");
-    }else res.send(estudantes);
+        if(estudantes.length > 0){
+            res.send(estudantes);
+        }else res.status(204).send("Nenhum valor a ser exibido");
     }).catch(err => {
         console.error("Ocorreu um erro ao conectar a collection Student");
         send.status(500);
@@ -52,7 +52,7 @@ exports.post = (req, res) => {
                 students.course.push(courses);
             }
         }
-        console.log(students)
+
         let valid = new Student(students);
         valid.validate(error => {
             if(!error){
@@ -94,15 +94,10 @@ exports.edit = (req, res) => {
     let student_temp = []; 
     student_temp.push(req.body.course);
 
-    if(students.name && students.lastname && students.age >= 17 && student_temp.length == 1){
     let id = parseInt(req.params.id);
     students.id = parseInt(req.params.id);
     let ide = parseInt(req.params.id);
-    if(students =={}){
-        res.status(400).send("Solicitação não autorizada");
-    }else{
-        (async function() {
-
+    (async function() {
         for (let i = 0; i < student_temp.length; i++) {
             let int = student_temp[i];
             int = student_temp[i];
@@ -111,22 +106,22 @@ exports.edit = (req, res) => {
                 students.course.push(courses);
             }
         }
-        if(students.course.length > 0){
-            let where = {"id": ide, "status": 1};
-            //let collun = { $set: {students} };
-            //console.log(ide);
-            modelStudent.updateStudent(where,students)
-            .then(result => {
+        let valid = new Student(students);
+        valid.validate(error => {
+            if(!error){
+               let where = {"id": ide, "status": 1};
+
+               modelStudent.updateStudent(where,students)
+                .then(result => {
                 if(result){ res.status(200).send("Estudante editado com Sucesso.");}
                 else{  res.status(401).send("Estudante não encontrado");}
-            })
-        }else{
-            res.status(401).send("Necessário cadastrar um curso válido para o aluno");
-        }
-        })().catch(e => {
+                })
+            }else{
+                res.status(401).send("Necessário cadastrar um curso válido para o aluno");
+            }
+        })
+    })().catch(e => {
             console.error("erro ao editar Estudante:", e);
             res.status(401).send("Ocorreu um erro ao editar Estudante:");
-        });
-  }
-}else res.status(401).send("Campo inválido");
+    });
 }

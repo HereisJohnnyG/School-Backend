@@ -12,12 +12,10 @@ exports.getAll = (req, res) => {
     let where = {"status": 1};
     let collun = {projection: {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0}};
     modelCourse.get(where,collun).then(
-        users => {
-            res.send(users);
-            if(courses == []){
-                res.status(404).send("Curso não encontrado");
-            }
-            else res.send(courses);
+        courses => {
+            if(courses.length > 0){
+                res.send(courses);
+              }else res.status(204).send("Nenhum valor a ser exibido");
         } 
     ).catch(err => {
         console.log(err);
@@ -33,12 +31,10 @@ exports.getOne = (req, res) => {
     let where = {"id": id, "status": 1};
     let collun = {projection: {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0}};
     modelCourse.get(where,collun).then(
-        users => {
-            res.send(users);
-            if(courses == []){
-                res.status(404).send("Curso não encontrado");
-            }
-            else res.send(courses);
+        courses => {
+            if(courses.length > 0){
+                res.send(courses);
+            }else res.status(204).send("Nenhum valor a ser exibido");
         } 
     ).catch(err => {
         console.log(err);
