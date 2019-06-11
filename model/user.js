@@ -23,7 +23,9 @@ exports.insert_data = (req, res) => {
     let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
     get(where,collun)
         .then(users => {
-        res.send(users);
+          if(users.length > 0){
+            res.send(users);
+          }else res.status(204).send("Nenhum valor a ser exibido");
         }).catch(err => {
             console.log(err);
             console.error("Ocorreu um erro ao conectar a collection User");

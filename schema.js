@@ -112,10 +112,9 @@ studentSchema = new Schema({
         min: [17, 'Muito novo'],
     },
     course: {
-        type: courseSchema, 
-        ref: 'course',
-        validate: [val => {return val != undefined}, 'Curso deve ser diferente de null'],
-        require: true
+        type: [courseSchema],
+        require: true,
+        validate: [val => {return val.length == 1}, 'São necessários pelo menos 2 professores válidos']
     }
 })
 
