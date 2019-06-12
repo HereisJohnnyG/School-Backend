@@ -5,7 +5,7 @@ const modelTeacher = require("../controller/teacher");
 
 //--------------USER-----------------//
 exports.user_getAll = (req, res) => {
-    return modelUser.insert_data(req, res);
+    return modelUser.getAll(req, res);
 }
 
 exports.user_getOne = (req, res) => {

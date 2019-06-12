@@ -1,18 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoClient = require("mongodb").MongoClient;
 const app = express();
-const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
+const conn = require('./config')
 
-mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
-  if(err){
-    console.error("Ocorreu um erro ao conectar ao MongoDB");
-    send.status(500); //Internal server error
-  }
-  else{
-    db = database.db('trainee-prominas');
-  }
-});
+conn();
+
 
 const baseAPI = "/api/v1";
 

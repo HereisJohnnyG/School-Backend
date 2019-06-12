@@ -34,7 +34,7 @@ const schema = Joi.object().keys({
 
 exports.getAll = (req, res) => {
     let where = {'status':1}
-    let collun = {projection: {_id: 0, status: 0}}
+    let collun = {_id: 0, status: 0}
     modelTeacher.get(where,collun)
         .then(teachers => {
             if(teachers.length > 0){
@@ -49,7 +49,7 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
     let id = parseInt(req.params.id);
     let where = {"id": id, status:1};
-    let collun = {projection: {_id: 0, status: 0}}
+    let collun = {_id: 0, status: 0}
     modelTeacher.get(where,collun)
         .then(teachers => {
             if(teachers.length > 0){
@@ -99,7 +99,7 @@ exports.edit = (req, res) => {
     let id = parseInt(req.params.id);
     usuarios.id = id;
     usuarios.status = 1;
-    //console.log(usuarios)
+
     let valid = new Teacher(usuarios);
     //-------------Joi Validation--------------------//
     schema.validate(req.body, {abortEarly: false}).then(validated => {
@@ -109,7 +109,7 @@ exports.edit = (req, res) => {
             where = {"id": id, "status": 1};
             modelTeacher.troca(where, usuarios).then(
             results => {
-                if(results.value == null) {
+                if(results.n == 0) {
                     res.status(401).send("Não foi possivel completar a atualização")
                 }
                 else{ 
@@ -146,7 +146,7 @@ exports.deleta = (req, res) => {
     let id = parseInt(req.params.id);
     where = {"id": id, "status": 1};
      modelTeacher.deleta(where).then(results => { 
-         if (results.value == null) {
+         if (results == null) {
              res.status(204).send("Não foi possivel encontrar o usuário")
          }else{
             modelCourse.updateMany({}, {$pull: {"teacher": {"id": id}}}).then(result => {

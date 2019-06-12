@@ -41,7 +41,7 @@ const schema = Joi.object().keys({
 exports.getAll = (req, res) => {
     let courses;
     let where = {"status": 1};
-    let collun = {projection: {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0}};
+    let collun = {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0};
     modelCourse.get(where,collun).then(
         courses => {
             if(courses.length > 0){
@@ -60,7 +60,7 @@ exports.getOne = (req, res) => {
     let courses;
     let id = parseInt(req.params.id);
     let where = {"id": id, "status": 1};
-    let collun = {projection: {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0}};
+    let collun = {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0};
     modelCourse.get(where,collun).then(
         courses => {
             if(courses.length > 0){
@@ -148,7 +148,7 @@ exports.edit = (req, res) => {
         if(!error){
             where = {"id": ide};
             modelCourse.updateCourse(where, courses).then(result => {
-            if(!result.value){
+            if(result.n == 0){
                 res.status(404).send("Não foi encontrado curso para ser atualizado");
             }else{
                 res.status(200).send("Curso modificado com sucesso");
@@ -176,7 +176,7 @@ exports.delete = (req, res) => {
     let id = parseInt(req.params.id);
     
     modelCourse.deleta(id).then(info => {
-    if(info.value){        
+    if(info){        
         modelStudent.updateMany({ "course.id": id }, { $set: { "status": 0 }});
             res.send("Curso excluido com sucesso");
     }else res.status(204).send("Não foi possivel excluir o curso");

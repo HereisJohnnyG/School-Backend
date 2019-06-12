@@ -37,27 +37,27 @@ const schema = Joi.object().keys({
 
 exports.getAll = (req, res) => {
     let where = {status:1};
-    let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
+    let collun = {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0};
     modelStudent.get(where, collun).then(estudantes =>{
         if(estudantes.length > 0){
             res.send(estudantes);
         }else res.status(204).send("Nenhum valor a ser exibido");
     }).catch(err => {
-        console.error("Ocorreu um erro ao conectar a collection Student");
-        send.status(500);
+        console.error("Ocorreu um erro ao conectar ao banco de dados");
+        res.send.status(500);
     })
 }
   
 exports.getOne = (req, res) => {
     let id = parseInt(req.params.id);
     let where = {"id": id, status:1};
-    let collun = {projection: {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0}};
+    let collun = {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0};
     modelStudent.get(where, collun).then(estudantes =>{
         if(estudantes.length > 0){
             res.send(estudantes);
         }else res.status(204).send("Nenhum valor a ser exibido");
     }).catch(err => {
-        console.error("Ocorreu um erro ao conectar a collection Student");
+        console.error("Ocorreu um erro ao conectar ao banco de dados");
         send.status(500);
     })
 } 
@@ -117,11 +117,11 @@ exports.delete = (req, res) => {
     where = {"id": id, "status": 1};
     set = {$set: {status: 0}}
     modelStudent.delete(where, set).then(results => { 
-      if(results.value == null) {
+      if(results == null) {
         res.status(204).send("Não foi possivel encontrar o usuário")
       }else res.send("Estudante excluido com sucesso");
     }).catch(e => {
-        console.error("Ocorreu um erro ao deletar os estudante da coleção");
+        console.error("Ocorreu um erro ao deletar os estudante do banco de dados");
         res.status(500);
     })
 }
@@ -169,7 +169,7 @@ exports.edit = (req, res) => {
             }
         })
     })().catch(e => {
-            console.error("erro ao editar Estudante:", e);
+            console.error("Erro ao editar Estudante:", e);
             res.status(401).send("Ocorreu um erro ao editar Estudante:");
     });
     //-------------------JOI Validation ------------//

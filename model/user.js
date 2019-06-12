@@ -2,10 +2,13 @@ const mongoClient = require("mongodb").MongoClient;
 const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 const mongoose = require("mongoose");
 const Schema = require("../schema").userSchema;
-const User = mongoose.model('user', Schema);
+const User = mongoose.model('User', Schema, 'user');
 const Joi = require('joi');
-var db, id;
 
+var id;
+User.countDocuments({}, (err, count) => {
+	id = count;
+});
 
 //----------------------USER Validation-----------//
 const schema = Joi.object().keys({
@@ -29,25 +32,13 @@ const schema = Joi.object().keys({
   }),
 });
 //-----------------------------------------------//
-
-
-
-mongoClient.connect(mdbURL, {useNewUrlParser: true}, (err, database) => {
-  if(err){
-    console.error("Ocorreu um erro ao conectar ao MongoDB");
-    send.status(500); //Internal server error
-  }
-  else{
-    db = database.db('trainee-prominas');
-    db.collection('user').find({}).toArray((err, user) =>{id = user.length});
-  }
-});
+ 
 
 //-------------------GET----------------------------//
 
 exports.getAll = (req, res) => {
     let where = {status:1};
-    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+    let collun = {_id: 0, id: 1, name: 1, lastname:1, profile:1};
     get(where,collun)
         .then(users => {
           if(users.length > 0){
@@ -64,7 +55,7 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
   let id = parseInt(req.params.id);
     let where = {"id": id, status:1};
-    let collun = {projection: {_id: 0, id: 1, name: 1, lastname:1, profile:1}};
+    let collun = {_id: 0, id: 1, name: 1, lastname:1, profile:1};
     get(where,collun)
         .then(users => {
           if(users.length > 0){
@@ -100,8 +91,7 @@ exports.post = (req, res) => {
           console.error("Ocorreu um erro ao conectar a collection User");
           res.status(500).send('Ocorreu um erro');
       });
-    }
-    else res.status(401).send(error.errors.profile.message);
+    }else res.status(401).send(error.errors.profile.message);
   })
   //-------------------JOI Validation ------------//
   }).catch(validationError=>{
@@ -129,9 +119,10 @@ exports.edit = (req, res) => {
         if(results == null) {
           res.status(401).send("Não foi possivel completar a atualização")
         }else 
-          //console.log(results.matchedCount);
-          if(results.matchedCount > 0){
+          if(results.nModified == 1){
             res.send("Usuário modificado com sucesso");
+          }else if (results.n == 1){
+            res.send("Nenhum campo atualizado para o usuário");
           }else res.send("Usuário não encontrado");
       }).catch(err => {
         res.status(401).send("Erro na atualização");
@@ -151,7 +142,7 @@ exports.delete = (req, res) => {
   let id = parseInt(req.params.id);
   //------------Alternate status to 1 for "delete" ---------------------//
     deleta(id).then( results => {
-        if(results.value == null) {
+        if(results == null) {
             res.status(204).send("Não foi possivel encontrar o usuário")
         }
         else res.send("Usuário excluido com sucesso");
@@ -166,17 +157,17 @@ exports.delete = (req, res) => {
 getId = () => {return ++id}
 
 get = (where, collun) =>  {
-    return db.collection('user').find(where, collun).toArray();
+    return User.find(where, collun);
 }
 
 insert = (document) => {
-    return db.collection('user').insertOne(document);
+    return User.create(document);
 }
 
 troca = (id, document) => {
-    return db.collection('user').updateOne({"id": id, "status": 1}, {$set: document});
+    return User.updateOne({"id": id, "status": 1}, {$set: document});
 }
 deleta = (id) => {
-    return db.collection('user').findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}});
+    return User.findOneAndUpdate({"id": id, "status": 1}, {$set: {status: 0}});
 }
 
