@@ -10,12 +10,12 @@ Student.countDocuments({}, (err, count) => {
 	id = count;
 });
 
-exports.getId = () => {
-  return ++id;
-}
+exports.getId = () => { return ++id; }
+
+exports.setId = () => {return --id}
 
 exports.get = (where, collun) => {
-    return Student.find(where, collun);
+    return Student.find(where, collun).sort({id: 1});
 }
 
 exports.updateStudent = (where, collun) => {

@@ -101,21 +101,26 @@ exports.post = (req, res) => {
         //-------------------Mongoose Validation and database storage----------------------//
         let valid = new Course(course);
         valid.validate(error => {
-        if(!error){
-            modelCourse.insertCourse(course).then(result => {
-                if(course.teacher.length < curso_var.length){
-                res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
-                }else res.status(201).send("Curso Cadastrado com Sucesso.");
-            });
-        }else res.status(401).send(error.errors.teacher.message);
+            if(!error){
+                modelCourse.insertCourse(course).then(result => {
+                    if(course.teacher.length < curso_var.length){
+                    res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
+                    }else res.status(201).send("Curso Cadastrado com Sucesso.");
+                });
+            }else{
+                modelCourse.setId();
+                res.status(401).send(error.errors.teacher.message);
+            }
         })
         //------------------Catch Errors ---------------------------//
       })().catch(e => {
+        modelCourse.setId();
         console.error("Erro ao Criar Um Novo Curso", e);
         res.status(500).send("Erro ao Criar Um Novo Curso");
     })
     //-------------------JOI Validation ------------//
     }).catch(validationError=>{
+        modelCourse.setId();
         res.status(401).send(validationError.message);
     });
 }

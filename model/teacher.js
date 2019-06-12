@@ -14,8 +14,10 @@ Teacher.countDocuments({}, (err, count) => {
 
 exports.getId = () => {return ++id}
 
+exports.setId = () => {return --id}
+
 exports.get = (where, collun) =>  {
-    return Teacher.find(where, collun);
+    return Teacher.find(where, collun).sort({id: 1});
 }
 
 exports.get_without_array = (where, collun) =>  {

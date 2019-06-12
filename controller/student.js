@@ -93,6 +93,7 @@ exports.post = (req, res) => {
                     res.status(201).send("Estudante Cadastrado com Sucesso.");
                 })
             }else{
+                modelStudent.setId();
                 if(error.errors.age != null){
                     fail = error.errors.age.message
                 }
@@ -102,11 +103,13 @@ exports.post = (req, res) => {
         })
         //--------------------------ASYNC CATCH-----------------------------//
     })().catch(err => {
+        modelStudent.setId();
         console.error("Erro ao cadastrar um novo estudante", err);
-        res.status(500).send("Erro ao criar Um novo estudante");
+        res.status(500).send("Erro ao conectar com o banco de dados");
     });
     //-------------------JOI VALIDATION ------------//
     }).catch(validationError=>{
+        modelStudent.setId();
         res.status(401).send(validationError.message);
     });
 }

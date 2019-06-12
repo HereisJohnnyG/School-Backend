@@ -14,8 +14,10 @@ Course.countDocuments({}, (err, count) => {
 
 exports.getId = () => {return ++id}
 
+exports.setId = () => {return --id}
+
 exports.get = (where, collun) =>  {
-    return Course.find(where, collun);
+    return Course.find(where, collun).sort({id: 1});
 }
 
 exports.get_todos = () =>  {

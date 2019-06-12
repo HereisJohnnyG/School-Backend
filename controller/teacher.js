@@ -78,12 +78,17 @@ exports.post = (req, res) => {
             modelTeacher.insert(usuario).then(e => {
                 res.status(201).send("Usuário cadastrado com sucesso");
             }).catch(e => {
+                modelTeacher.setId(); //DECREASE ID IN CASE OF ERROR
                 res.status(401).send("Erro ao cadastrar usuário");
             });
-        }else res.status(401).send(error.errors.phd.message)
+        }else{
+            modelTeacher.setId(); //DECREASE ID IN CASE OF ERROR
+            res.status(401).send(error.errors.phd.message)
+        }
     })
       //-------------------JOI Validation ------------//
     }).catch(validationError=>{
+        modelTeacher.setId(); //DECREASE ID IN CASE OF ERROR
         res.status(401).send(validationError.message);
     });
 }

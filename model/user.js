@@ -87,14 +87,19 @@ exports.post = (req, res) => {
       insert(usuario).then(user => {
         res.status(201).send("Usuário cadastrado com sucesso");
       }).catch(err => {
+          setId();
           console.log(err);
           console.error("Ocorreu um erro ao conectar a collection User");
           res.status(500).send('Ocorreu um erro');
       });
-    }else res.status(401).send(error.errors.profile.message);
+    }else{
+      setId();
+      res.status(401).send(error.errors.profile.message);
+    }
   })
   //-------------------JOI Validation ------------//
   }).catch(validationError=>{
+    setId();
 		res.status(401).send(validationError.message);
 	});
 }
@@ -156,8 +161,10 @@ exports.delete = (req, res) => {
 
 getId = () => {return ++id}
 
+setId = () => {return --id}
+
 get = (where, collun) =>  {
-    return User.find(where, collun);
+    return User.find(where, collun).sort({id: 1});
 }
 
 insert = (document) => {
