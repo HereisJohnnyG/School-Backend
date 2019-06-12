@@ -124,9 +124,10 @@ exports.edit = (req, res) => {
                         if(results){
                             modelCourse.get({"teacher.id": id, status: 1}, {}).then(course_temo => {
                               course_temo.forEach((e) => {
+                                console.log(e.id);
                                 modelStudent.replace(
                                 {"status": 1, "course.id": e.id},
-                                {$set: {"course": e}})
+                                {$set: {"course": e}}).then(result => console.log(result));
                                 })
                               })
                               res.send("Professor modificado com sucesso");

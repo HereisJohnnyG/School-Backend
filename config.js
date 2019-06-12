@@ -5,9 +5,11 @@ const dbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/trainee-prom
 
 module.exports = function(){
 
+  //Connection
   mongoose.connect(dbURL, { useNewUrlParser: true });
 
   mongoose.connection.on('connected', function(){
+      mongoose.set('useFindAndModify', false);
       console.log("Mongoose default connection is open to ", dbURL);
   });
 
@@ -20,10 +22,10 @@ module.exports = function(){
   });
 
   process.on('SIGINT', function(){
-      mongoose.connection.close(function(){
-        //   console.log(termination("Mongoose default connection is disconnected due to application termination"));
-        console.log('Encerrando a conexão');
-        process.exit(0)
-      });
+    mongoose.connection.close(function(){
+      //   console.log(termination("Mongoose default connection is disconnected due to application termination"));
+      console.log('Encerrando a conexão');
+      process.exit(0)
+    });
   });
 }
