@@ -147,26 +147,32 @@ exports.edit = (req, res) => {
 
 /***************DELETE***********************/
 
-exports.deleta = (req, res) => {
+exports.deleta = async (req, res) => {
     let id = parseInt(req.params.id);
     where = {"id": id, "status": 1};
-     modelTeacher.deleta(where).then(results => { 
-         if (results == null) {
-             res.status(204).send("Não foi possivel encontrar o usuário")
-         }else{
-            modelCourse.updateMany({}, {$pull: {"teacher": {"id": id}}}).then(result => {
-            modelCourse.get({"status": 1}).then(course_temo => {
-                course_temo.forEach((e) => {
-                        modelStudent.replace(
-                        {"status": 1, "course.id": e.id},
-                        {$set: {"course": e}}).then(result => {});
-                    })
-            })})
-            res.send("O professor foi removido com sucesso")
-         }
-     })
-     .catch(e => {
-         console.error("Ocorreu um erro ao deletar os professores da coleção", e);
-          res.status(500);
-     })
+    let session = await mongoose.startSession();
+    session.startTransaction();
+    try{
+        results = await modelTeacher.deleta(where).session(session);
+    if (results == null) {
+        throw "Não foi possivel encontrar o usuário";
+    }else{
+    await modelCourse.updateMany({}, {$pull: {"teacher": {"id": id}}}).session(session);
+    modelCourse.get({"status": 1}).then( async course_temo => {
+    await course_temo.forEach(async (e) => {
+        await modelStudent.replace(
+        {"status": 1, "course.id": e.id},
+        {$set: {"course": e}});
+    })
+    });
+    await session.commitTransaction();
+    await session.endSession();
+    res.send("O professor foi removido com sucesso")
+    }
+    }catch(e){
+        await session.abortTransaction();
+        await session.endSession();
+        console.error("Ocorreu um erro ao deletar os professores da coleção:", e);
+        res.status(500).send(e);
+    }
 }

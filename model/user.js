@@ -1,5 +1,3 @@
-const mongoClient = require("mongodb").MongoClient;
-const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
 const mongoose = require("mongoose");
 const Schema = require("../schema").userSchema;
 const User = mongoose.model('User', Schema, 'user');

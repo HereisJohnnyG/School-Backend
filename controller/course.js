@@ -42,7 +42,7 @@ exports.getAll = (req, res) => {
     let courses;
     let where = {"status": 1};
     let collun = {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0};
-    modelCourse.get(where,collun).then(
+    modelCourse.get_loopUp(where,collun).then(
         courses => {
             if(courses.length > 0){
                 res.send(courses);
@@ -177,16 +177,36 @@ exports.edit = (req, res) => {
 
 //----------------DELETE--------------------------------//
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
     let id = parseInt(req.params.id);
-    
-    modelCourse.deleta(id).then(info => {
-    if(info){        
-        modelStudent.updateMany({ "course.id": id }, { $set: { "status": 0 }});
-            res.send("Curso excluido com sucesso");
-    }else res.status(204).send("Não foi possivel excluir o curso");
-    }).catch(err => {
+    console.log(1);
+    let session = await mongoose.startSession();
+    session.startTransaction();
+    console.log(2);
+    try{
+        console.log(3); 
+        info = await modelCourse.deleta(id).session(session)
+
+        if(info){  
+            console.log(4); 
+            await modelStudent.updateMany({ "course.id": id }, { $set: { "status": 0 }}).session(session);
+            console.log(5);
+            //throw new err;
+            await session.commitTransaction();
+            session.endSession();
+            res.send("Curso excluido com sucesso"); 
+               
+        }else{
+            console.log(6); 
+            throw new err;
+        }
+    }catch(err) {
+        //console.log(session); 
+        await session.abortTransaction();
+        console.log(8);
+        session.endSession();
+        console.log(9);
         console.error("Ocorreu um erro ao deletar o curso da coleção");
-        res.status(500);
-    });
+        res.status(500).send("Ocorreu um erro inesperado ao excluir o curso");
+    };
 }

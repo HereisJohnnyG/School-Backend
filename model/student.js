@@ -1,6 +1,3 @@
-const mongoClient = require("mongodb").MongoClient;
-const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
-
 const mongoose = require("mongoose");
 const Schema = require("../schema").studentSchema;
 const Student = mongoose.model('Student', Schema, 'student');
@@ -38,8 +35,8 @@ exports.delete = (where, set) => {
     return Student.findOneAndUpdate(where, set); 
 }
 
-exports.replace = (where, set) => {
-  return Student.updateMany(where, set);
+exports.replace = (where, set, session) => {
+  return Student.updateMany(where, set).session(session);
 }
 
 exports.updateMany = (where, collun) => {

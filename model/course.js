@@ -1,6 +1,3 @@
-const mongoClient = require("mongodb").MongoClient;
-const mdbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/test?retryWrites=true&w=majority";
-
 const mongoose = require("mongoose");
 const Schema = require("../schema").courseSchema;
 const Course = mongoose.model('Course', Schema, 'course');
@@ -18,6 +15,10 @@ exports.setId = () => {return --id}
 
 exports.get = (where, collun) =>  {
     return Course.find(where, collun).sort({id: 1});
+}
+
+exports.get_loopUp = (where, collun) =>  {
+  return Course.aggregate([{$match: where}, {$lookup: {from: 'teacher', localField: 'teacher.id', foreignField: "id", as: "Professores"}}]);
 }
 
 exports.get_todos = () =>  {

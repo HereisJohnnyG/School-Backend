@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 //---------------DATABASE CONNECTION ------------------------//
-const dbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/trainee-prominas?retryWrites=true&w=majority";
+const dbURL = "mongodb+srv://admin:admin@cluster0-th9se.mongodb.net/trainee-prominas?replicaSet=rsName?retryWrites=true&w=majority";
 
 module.exports = function(){
 
