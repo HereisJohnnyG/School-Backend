@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const conn = require('./config')
+const cors = require('cors')
 
 conn();
 
@@ -11,6 +12,9 @@ const baseAPI = "/api/v1";
 
 app.use(bodyParser.json());
 
+
+
+app.use(cors());
 app.get(baseAPI, function (req, res) {
   res.status(200).send('Hello World!');
 });
