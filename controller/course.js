@@ -42,7 +42,7 @@ exports.getAll = (req, res) => {
     let courses;
     let where = {"status": 1};
     let collun = {'_id': 0, 'status':0, 'teacher.status': 0, 'teacher._id': 0};
-    modelCourse.get_loopUp(where,collun).then(
+    modelCourse.get(where,collun).then(
         courses => {
             if(courses.length > 0){
                 res.send(courses);

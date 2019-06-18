@@ -82,6 +82,9 @@ courseSchema = new Schema({
         type: Number,
         default: 8
     },
+    city: {
+        type: String
+    },
     teacher: {
         type: [teacherSchema], 
         validate: [val => {return val.length >= 2}, 'São necessários pelo menos 2 professores válidos']
