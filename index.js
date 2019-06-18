@@ -2,13 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const conn = require('./config')
+const cors = require('cors');
 
 conn();
 
 
 const baseAPI = "/api/v1";
 
-
+app.use(cors());
+app.options('*', cors());
 app.use(bodyParser.json());
 
 app.get(baseAPI, function (req, res) {
