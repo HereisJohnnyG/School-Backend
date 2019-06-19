@@ -38,11 +38,11 @@ exports.getAll = (req, res) => {
     modelTeacher.get(where,collun)
         .then(teachers => {
             if(teachers.length > 0){
-                res.send(teachers);
-              }else res.status(204).send("Nenhum valor a ser exibido");
+                res.json(teachers);
+              }else res.status(204).json("Nenhum valor a ser exibido");
         }).catch(err => {
         console.error("Ocorreu um erro ao enviar os usuários", err);
-        res.status(500).send('Ocorreu um erro');
+        res.status(500).json('Ocorreu um erro');
     });
 }
 
@@ -53,11 +53,11 @@ exports.getOne = (req, res) => {
     modelTeacher.get(where,collun)
         .then(teachers => {
             if(teachers.length > 0){
-                res.send(teachers);
-            }else res.status(204).send("Nenhum valor a ser exibido");
+                res.json(teachers);
+            }else res.status(204).json("Nenhum valor a ser exibido");
         }).catch(err => {
         console.error("Ocorreu um erro ao enviar os usuários", err);
-        res.status(500).send('Ocorreu um erro');
+        res.status(500).json('Ocorreu um erro');
     });
 }
 
@@ -76,20 +76,20 @@ exports.post = (req, res) => {
     valid.validate(error => { 
         if(!error){
             modelTeacher.insert(usuario).then(e => {
-                res.status(201).send("Usuário cadastrado com sucesso");
+                res.status(201).json("Usuário cadastrado com sucesso");
             }).catch(e => {
                 modelTeacher.setId(); //DECREASE ID IN CASE OF ERROR
-                res.status(401).send("Erro ao cadastrar usuário");
+                res.status(401).json("Erro ao cadastrar usuário");
             });
         }else{
             modelTeacher.setId(); //DECREASE ID IN CASE OF ERROR
-            res.status(401).send(error.errors.phd.message)
+            res.status(401).json(error.errors.phd.message)
         }
     })
       //-------------------JOI Validation ------------//
     }).catch(validationError=>{
         modelTeacher.setId(); //DECREASE ID IN CASE OF ERROR
-        res.status(401).send(validationError.message);
+        res.status(401).json(validationError.message);
     });
 }
 
@@ -115,7 +115,7 @@ exports.edit = (req, res) => {
             modelTeacher.troca(where, usuarios).then(
             results => {
                 if(results.n == 0) {
-                    res.status(401).send("Não foi possivel completar a atualização")
+                    res.status(401).json("Não foi possivel completar a atualização")
                 }
                 else{ 
                     modelCourse.updateMany(
@@ -129,19 +129,19 @@ exports.edit = (req, res) => {
                                 {$set: {"course": e}}).then(result => {});
                                 })
                               })
-                              res.send("Professor modificado com sucesso");
+                              res.json("Professor modificado com sucesso");
                           }
                           else{
-                            res.send('Erro na modificação');
+                            res.json('Erro na modificação');
                           }
                     })
                 }
-            }).catch(e => res.status(401).send("Não foi possivel completar a atualização"));
-        }else res.status(401).send(error.errors.phd.message)
+            }).catch(e => res.status(401).json("Não foi possivel completar a atualização"));
+        }else res.status(401).json(error.errors.phd.message)
     })
       //-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send(validationError.message);
+        res.status(401).json(validationError.message);
     });
 }
 
@@ -167,12 +167,12 @@ exports.deleta = async (req, res) => {
     });
     await session.commitTransaction();
     await session.endSession();
-    res.send("O professor foi removido com sucesso")
+    res.json("O professor foi removido com sucesso")
     }
     }catch(e){
         await session.abortTransaction();
         await session.endSession();
         console.error("Ocorreu um erro ao deletar os professores da coleção:", e);
-        res.status(500).send(e);
+        res.status(500).json(e);
     }
 }

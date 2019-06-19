@@ -14,11 +14,11 @@ app.options('*', cors());
 app.use(bodyParser.json());
 
 app.get(baseAPI, function (req, res) {
-  res.status(200).send('Hello World!');
+  res.status(200).json('Hello World!');
 });
 
 app.post(baseAPI, function (req, res) {
-  res.status(200).send('Hello World');
+  res.status(200).json('Hello World');
 });
 
 

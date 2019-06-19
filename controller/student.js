@@ -40,11 +40,11 @@ exports.getAll = (req, res) => {
     let collun = {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0};
     modelStudent.get(where, collun).then(estudantes =>{
         if(estudantes.length > 0){
-            res.send(estudantes);
-        }else res.status(204).send("Nenhum valor a ser exibido");
+            res.json(estudantes);
+        }else res.status(204).json("Nenhum valor a ser exibido");
     }).catch(err => {
         console.error("Ocorreu um erro ao conectar ao banco de dados");
-        res.send.status(500);
+        res.json.status(500);
     })
 }
   
@@ -54,8 +54,8 @@ exports.getOne = (req, res) => {
     let collun = {"_id": 0, "status": 0, "course._id": 0, "course.status": 0, "course.teacher._id": 0, "course.teacher.status": 0};
     modelStudent.get(where, collun).then(estudantes =>{
         if(estudantes.length > 0){
-            res.send(estudantes);
-        }else res.status(204).send("Nenhum valor a ser exibido");
+            res.json(estudantes);
+        }else res.status(204).json("Nenhum valor a ser exibido");
     }).catch(err => {
         console.error("Ocorreu um erro ao conectar ao banco de dados");
         send.status(500);
@@ -90,7 +90,7 @@ exports.post = (req, res) => {
         valid.validate(error => {
             if(!error){
                 modelStudent.insertStudent(students).then( result => {
-                    res.status(201).send("Estudante Cadastrado com Sucesso.");
+                    res.status(201).json("Estudante Cadastrado com Sucesso.");
                 })
             }else{
                 modelStudent.setId();
@@ -98,19 +98,19 @@ exports.post = (req, res) => {
                     fail = error.errors.age.message
                 }
                 else fail = error.errors.course.message;
-                res.status(401).send(fail);
+                res.status(401).json(fail);
             }
         })
         //--------------------------ASYNC CATCH-----------------------------//
     })().catch(err => {
         modelStudent.setId();
         console.error("Erro ao cadastrar um novo estudante", err);
-        res.status(500).send("Erro ao conectar com o banco de dados");
+        res.status(500).json("Erro ao conectar com o banco de dados");
     });
     //-------------------JOI VALIDATION ------------//
     }).catch(validationError=>{
         modelStudent.setId();
-        res.status(401).send(validationError.message);
+        res.status(401).json(validationError.message);
     });
 }
 
@@ -121,8 +121,8 @@ exports.delete = (req, res) => {
     set = {$set: {status: 0}}
     modelStudent.delete(where, set).then(results => { 
       if(results == null) {
-        res.status(204).send("Não foi possivel encontrar o usuário")
-      }else res.send("Estudante excluido com sucesso");
+        res.status(204).json("Não foi possivel encontrar o usuário")
+      }else res.json("Estudante excluido com sucesso");
     }).catch(e => {
         console.error("Ocorreu um erro ao deletar os estudante do banco de dados");
         res.status(500);
@@ -160,23 +160,23 @@ exports.edit = (req, res) => {
 
                modelStudent.updateStudent(where,students)
                 .then(result => {
-                if(result){ res.status(200).send("Estudante editado com Sucesso.");}
-                else{  res.status(401).send("Estudante não encontrado");}
+                if(result){ res.status(200).json("Estudante editado com Sucesso.");}
+                else{  res.status(401).json("Estudante não encontrado");}
                 })
             }else{
                 if(error.errors.age != null){
                     fail = error.errors.age.message
                 }
                 else fail = error.errors.course.message;
-                res.status(401).send(fail);
+                res.status(401).json(fail);
             }
         })
     })().catch(e => {
             console.error("Erro ao editar Estudante:", e);
-            res.status(401).send("Ocorreu um erro ao editar Estudante:");
+            res.status(401).json("Ocorreu um erro ao editar Estudante:");
     });
     //-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send(validationError.message);
+        res.status(401).json(validationError.message);
     });
 }

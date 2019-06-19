@@ -45,13 +45,13 @@ exports.getAll = (req, res) => {
     modelCourse.get(where,collun).then(
         courses => {
             if(courses.length > 0){
-                res.send(courses);
-              }else res.status(204).send("Nenhum valor a ser exibido");
+                res.json(courses);
+              }else res.status(204).json("Nenhum valor a ser exibido");
         } 
     ).catch(err => {
         console.log(err);
         console.error("Ocorreu um erro ao procurar o curso");
-        res.status(500).send("Ocorreu um erro ao procurar o curso");
+        res.status(500).json("Ocorreu um erro ao procurar o curso");
     });
 };
 
@@ -64,13 +64,13 @@ exports.getOne = (req, res) => {
     modelCourse.get(where,collun).then(
         courses => {
             if(courses.length > 0){
-                res.send(courses);
-            }else res.status(204).send("Nenhum valor a ser exibido");
+                res.json(courses);
+            }else res.status(204).json("Nenhum valor a ser exibido");
         } 
     ).catch(err => {
         console.log(err);
         console.error("Ocorreu um erro ao procurar o curso");
-        res.status(500).send("Ocorreu um erro ao procurar o curso");
+        res.status(500).json("Ocorreu um erro ao procurar o curso");
     });
 }
 
@@ -104,24 +104,24 @@ exports.post = (req, res) => {
             if(!error){
                 modelCourse.insertCourse(course).then(result => {
                     if(course.teacher.length < curso_var.length){
-                    res.status(201).send("Curso cadastrado mas informação de um id de professor digitado não exite")
-                    }else res.status(201).send("Curso Cadastrado com Sucesso.");
+                    res.status(201).json("Curso cadastrado mas informação de um id de professor digitado não exite")
+                    }else res.status(201).json("Curso Cadastrado com Sucesso.");
                 });
             }else{
                 modelCourse.setId();
-                res.status(401).send(error.errors.teacher.message);
+                res.status(401).json(error.errors.teacher.message);
             }
         })
         //------------------Catch Errors ---------------------------//
       })().catch(e => {
         modelCourse.setId();
         console.error("Erro ao Criar Um Novo Curso", e);
-        res.status(500).send("Erro ao Criar Um Novo Curso");
+        res.status(500).json("Erro ao Criar Um Novo Curso");
     })
     //-------------------JOI Validation ------------//
     }).catch(validationError=>{
         modelCourse.setId();
-        res.status(401).send(validationError.message);
+        res.status(401).json(validationError.message);
     });
 }
 
@@ -154,24 +154,24 @@ exports.edit = (req, res) => {
             where = {"id": ide};
             modelCourse.updateCourse(where, courses).then(result => {
             if(result.n == 0){
-                res.status(404).send("Não foi encontrado curso para ser atualizado");
+                res.status(404).json("Não foi encontrado curso para ser atualizado");
             }else{
-                res.status(200).send("Curso modificado com sucesso");
+                res.status(200).json("Curso modificado com sucesso");
                 modelStudent.updateMany({ "course.id": ide }, { $set: { "course": courses }}).then(
                 results => {
                     //console.log(course.teacher);   
                 })
             }
             })
-        }else res.status(401).send(error.errors.teacher.message);
+        }else res.status(401).json(error.errors.teacher.message);
     })
     })().catch(err => {
         console.log(courses.teacher.length);
         console.error("Erro ao modificar o curso", err);
-        res.status(401).send("Erro ao modificar o Curso");
+        res.status(401).json("Erro ao modificar o Curso");
     });//-------------------JOI Validation ------------//
     }).catch(validationError=>{
-        res.status(401).send(validationError.message);
+        res.status(401).json(validationError.message);
     });
 }
 
@@ -194,7 +194,7 @@ exports.delete = async (req, res) => {
             //throw new err;
             await session.commitTransaction();
             session.endSession();
-            res.send("Curso excluido com sucesso"); 
+            res.json("Curso excluido com sucesso"); 
                
         }else{
             console.log(6); 
@@ -207,6 +207,6 @@ exports.delete = async (req, res) => {
         session.endSession();
         console.log(9);
         console.error("Ocorreu um erro ao deletar o curso da coleção");
-        res.status(500).send("Ocorreu um erro inesperado ao excluir o curso");
+        res.status(500).json("Ocorreu um erro inesperado ao excluir o curso");
     };
 }

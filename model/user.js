@@ -40,12 +40,12 @@ exports.getAll = (req, res) => {
     get(where,collun)
         .then(users => {
           if(users.length > 0){
-            res.send(users);
-          }else res.status(204).send("Nenhum valor a ser exibido");
+            res.json(users);
+          }else res.status(204).json("Nenhum valor a ser exibido");
         }).catch(err => {
             console.log(err);
             console.error("Ocorreu um erro ao conectar a collection User");
-            res.status(500).send('Ocorreu um erro');
+            res.status(500).json('Ocorreu um erro');
     });
 }
 
@@ -57,12 +57,12 @@ exports.getOne = (req, res) => {
     get(where,collun)
         .then(users => {
           if(users.length > 0){
-            res.send(users);
-          }else res.status(204).send("Nenhum valor a ser exibido");
+            res.json(users);
+          }else res.status(204).json("Nenhum valor a ser exibido");
         }).catch(err => {
             console.log(err);
             console.error("Ocorreu um erro ao conectar a collection User");
-            res.status(500).send('Ocorreu um erro');
+            res.status(500).json('Ocorreu um erro');
     });
 }
 
@@ -83,22 +83,22 @@ exports.post = (req, res) => {
 //--------------Code----------------------------//
     if(!error){
       insert(usuario).then(user => {
-        res.status(201).send("Usuário cadastrado com sucesso");
+        res.status(201).json("Usuário cadastrado com sucesso");
       }).catch(err => {
           setId();
           console.log(err);
           console.error("Ocorreu um erro ao conectar a collection User");
-          res.status(500).send('Ocorreu um erro');
+          res.status(500).json('Ocorreu um erro');
       });
     }else{
       setId();
-      res.status(401).send(error.errors.profile.message);
+      res.status(401).json(error.errors.profile.message);
     }
   })
   //-------------------JOI Validation ------------//
   }).catch(validationError=>{
     setId();
-		res.status(401).send(validationError.message);
+		res.status(401).json(validationError.message);
 	});
 }
 
@@ -120,21 +120,21 @@ exports.edit = (req, res) => {
     if(!error){
       troca(id, usuario).then(results => { 
         if(results == null) {
-          res.status(401).send("Não foi possivel completar a atualização")
+          res.status(401).json("Não foi possivel completar a atualização")
         }else 
           if(results.nModified == 1){
-            res.send("Usuário modificado com sucesso");
+            res.json("Usuário modificado com sucesso");
           }else if (results.n == 1){
-            res.send("Nenhum campo atualizado para o usuário");
-          }else res.send("Usuário não encontrado");
+            res.json("Nenhum campo atualizado para o usuário");
+          }else res.json("Usuário não encontrado");
       }).catch(err => {
-        res.status(401).send("Erro na atualização");
+        res.status(401).json("Erro na atualização");
       });
-      }else res.status(401).send(error.errors.profile.message);
+      }else res.status(401).json(error.errors.profile.message);
     })
     //-------------------JOI Validation ------------//
   }).catch(validationError=>{
-		res.status(401).send(validationError.message);
+		res.status(401).json(validationError.message);
 	});
 }
 
@@ -146,9 +146,9 @@ exports.delete = (req, res) => {
   //------------Alternate status to 1 for "delete" ---------------------//
     deleta(id).then( results => {
         if(results == null) {
-            res.status(204).send("Não foi possivel encontrar o usuário")
+            res.status(204).json("Não foi possivel encontrar o usuário")
         }
-        else res.send("Usuário excluido com sucesso");
+        else res.json("Usuário excluido com sucesso");
     }).catch(err => {
         console.error("Ocorreu um erro ao deletar os usuários da coleção");
         res.status(500);
